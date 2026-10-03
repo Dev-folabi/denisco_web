@@ -249,44 +249,44 @@ src/
 ## 3. Components to Build
 
 ### Layout Components
-- [ ] `SiteHeader` — Sticky header: brand logo/text, main nav, search form, cart icon with badge, login/account button, mobile toggle
-- [ ] `SiteFooter` — Forest-deep bg: 4-column grid (brand + socials, Quick Links, Farm Divisions, Contact), copyright bar
-- [ ] `MobileNav` — Full-screen sliding panel (right), nav links with close button, scrim overlay
-- [ ] `PageHero` — Forest bg section: breadcrumb, h1, description
-- [ ] `Breadcrumb` — Simple text breadcrumb with links
+- [x] `SiteHeader` — Sticky header: brand logo/text, main nav, search form, cart icon with badge, login/account button, mobile toggle
+- [x] `SiteFooter` — Forest-deep bg: 4-column grid (brand + socials, Quick Links, Farm Divisions, Contact), copyright bar
+- [x] `MobileNav` — Full-screen sliding panel (right), nav links with close button, scrim overlay
+- [x] `PageHero` — Forest bg section: breadcrumb, h1, description
+- [x] `Breadcrumb` — Simple text breadcrumb with links
 
 ### Product Components
-- [ ] `ProductCard` — Image with category + stock badge, name, description, price/unit, Details + Add buttons
-- [ ] `ProductGrid` — 4-column responsive grid
-- [ ] `StockBadge` — Green/amber/red pill with text
-- [ ] `CategoryFilter` — Horizontal chip buttons (pill shape, active state)
-- [ ] `SortDropdown` — Select element
-- [ ] `QtySteppper` — Bordered group: - button, input, + button
+- [x] `ProductCard` — Image with category + stock badge, name, description, price/unit, Details + Add buttons
+- [x] `ProductGrid` — 4-column responsive grid
+- [x] `StockBadge` — Green/amber/red pill with text
+- [x] `CategoryFilter` — Horizontal chip buttons (pill shape, active state)
+- [x] `SortDropdown` — Select element
+- [x] `QtySteppper` — Bordered group: - button, input, + button
 
 ### Cart Components
-- [ ] `CartRow` — 5-column grid: image, info, qty stepper, subtotal, remove
-- [ ] `CartSummary` — Sticky card: line items, subtotal, delivery, total, CTA button
+- [x] `CartRow` — 5-column grid: image, info, qty stepper, subtotal, remove
+- [x] `CartSummary` — Sticky card: line items, subtotal, delivery, total, CTA button
 
 ### Consultation Components
-- [ ] `ConsultTypeCard` — Selectable card: name, description, duration, price
-- [ ] `DateScroller` — Horizontal scroll container with date buttons (weekday, day, month)
-- [ ] `TimeSlotGrid` — 4-column grid of pill buttons, disabled state for taken slots
+- [x] `ConsultTypeCard` — Selectable card: name, description, duration, price
+- [x] `DateScroller` — Horizontal scroll container with date buttons (weekday, day, month)
+- [x] `TimeSlotGrid` — 4-column grid of pill buttons, disabled state for taken slots
 
 ### Account Components
-- [ ] `DashSidebar` — Avatar, name, nav links (desktop). Bottom tab bar (mobile).
-- [ ] `StatCard` — Left border accent, icon circle, value, label
-- [ ] `OrderDetailCard` — Full order info card with items table and summary
-- [ ] `StatusPill` — Colored pill badge for order/payment/booking status
+- [x] `DashSidebar` — Avatar, name, nav links (desktop). Bottom tab bar (mobile).
+- [x] `StatCard` — Left border accent, icon circle, value, label
+- [x] `OrderDetailCard` — Full order info card with items table and summary
+- [x] `StatusPill` — Colored pill badge for order/payment/booking status
 
 ### Shared UI Components (via shadcn/ui + custom)
-- [ ] `Button` — Pill shape (rounded-full), variants: primary, accent, outline, ghost, danger
-- [ ] `Card` — White bg, line border, rounded-[18px], shadow
-- [ ] `Modal` — Centered overlay with close button, wide variant
-- [ ] `Toast` — Bottom-right stack: left colored border, icon + message, auto-dismiss
-- [ ] `ConfirmDialog` — Modal with title, message, Cancel + Confirm buttons
-- [ ] `EmptyState` — Centered: large icon, h3, description, optional CTA
-- [ ] `FormControl` — Input with olive focus border
-- [ ] `SectionHead` — Eyebrow (green line + uppercase text) + h2 + optional description
+- [x] `Button` — Pill shape (rounded-full), variants: primary, accent, outline, ghost, danger
+- [x] `Card` — White bg, line border, rounded-[18px], shadow
+- [x] `Modal` — Centered overlay with close button, wide variant
+- [x] `Toast` — Bottom-right stack: left colored border, icon + message, auto-dismiss
+- [x] `ConfirmDialog` — Modal with title, message, Cancel + Confirm buttons
+- [x] `EmptyState` — Centered: large icon, h3, description, optional CTA
+- [x] `FormControl` — Input with olive focus border
+- [x] `SectionHead` — Eyebrow (green line + uppercase text) + h2 + optional description
 
 ---
 
