@@ -1,0 +1,152 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* --- DENISCO Colors (from prototype :root) --- */
+  --color-cream: #FAF6EC;
+  --color-cream-deep: #F1EAD8;
+  --color-ink: #1E2A1B;
+  --color-forest: #173620;
+  --color-forest-deep: #0E2213;
+  --color-olive: #5B7B45;
+  --color-olive-light: #8FAE6E;
+  --color-lime: #CBE36B;
+  --color-lime-deep: #A9C93B;
+  --color-clay: #C97A4A;
+  --color-line: #E6DFC9;
+  --color-muted: #847E6C;
+  --color-danger: #B3462C;
+  --color-info: #3B6E8F;
+
+  /* Badge colors */
+  --color-badge-green-bg: #e5f0da;
+  --color-badge-green-text: #173620;
+  --color-badge-amber-bg: #faecd8;
+  --color-badge-amber-text: #a2651b;
+  --color-badge-red-bg: #f8e2db;
+  --color-badge-red-text: #B3462C;
+  --color-badge-grey-bg: #efece2;
+  --color-badge-grey-text: #847E6C;
+  --color-badge-blue-bg: #e1edf4;
+  --color-badge-blue-text: #3B6E8F;
+
+  /* --- Typography --- */
+  --font-serif: var(--font-fraunces), "Fraunces", serif;
+  --font-sans: var(--font-manrope), "Manrope", sans-serif;
+  --font-heading: var(--font-serif);
+
+  /* --- Border Radius --- */
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 10px;
+  --radius-pill: 9999px;
+  --radius-xl: 28px;
+  --radius-2xl: 28px;
+
+  /* --- Shadows --- */
+  --shadow-default: 0 10px 30px rgba(23, 54, 32, 0.10);
+  --shadow-lg: 0 26px 60px rgba(14, 34, 19, 0.18);
+
+  /* --- shadcn/ui theme mapping --- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* Map shadcn CSS variables to DENISCO palette */
+:root {
+  --background: #FAF6EC;
+  --foreground: #1E2A1B;
+  --card: #FFFFFF;
+  --card-foreground: #1E2A1B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E2A1B;
+  --primary: #173620;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1EAD8;
+  --secondary-foreground: #173620;
+  --accent: #CBE36B;
+  --accent-foreground: #0E2213;
+  --destructive: #B3462C;
+  --border: #E6DFC9;
+  --input: #E6DFC9;
+  --ring: #5B7B45;
+  --muted-foreground: #847E6C;
+  --radius: 10px;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Eyebrow Label --- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-olive);
+  font-weight: 800;
+  font-size: 11.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--color-olive);
+  flex-shrink: 0;
+}
+
+/* --- Container --- */
+.container {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+@media (max-width: 760px) {
+  .container {
+    padding: 0 18px;
+  }
+}
+
+@media (max-width: 390px) {
+  .container {
+    padding: 0 12px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
