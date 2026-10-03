@@ -14,10 +14,10 @@ const ALL_CATEGORIES = [
 ];
 
 const SORT_OPTIONS = [
-  { value: "featured", label: "Featured" },
-  { value: "price-asc", label: "Price: Low → High" },
-  { value: "price-desc", label: "Price: High → Low" },
-  { value: "name-asc", label: "Name: A → Z" },
+  { value: "featured", label: "Sort: Featured" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+  { value: "name-asc", label: "Name: A-Z" },
 ];
 
 function ShopContent() {
@@ -30,8 +30,8 @@ function ShopContent() {
   return (
     <>
       <PageHero
-        title="Shop Products"
-        description="Quality agricultural products from our integrated farm — delivered to your doorstep."
+        title="Farm Products Shop"
+        description="Order quality poultry, livestock, piggery, snail and crop produce directly from our farm."
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Shop" },

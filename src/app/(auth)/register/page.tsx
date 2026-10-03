@@ -64,9 +64,9 @@ export default function RegisterPage() {
             height={60}
             className="mx-auto mb-4 size-[60px] rounded-full border border-line object-cover"
           />
-          <h1 className="text-[28px] font-semibold">Create Account</h1>
+          <h1 className="text-[28px] font-semibold">Create an Account</h1>
           <p className="text-sm text-muted">
-            Join DENISCO to shop and book consultations
+            Demo registration for prototype purposes only.
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export default function RegisterPage() {
         <p className="mt-6 text-center text-sm text-muted">
           Already have an account?{" "}
           <Link href="/login" className="font-bold text-olive hover:text-forest">
-            Sign In
+            Login here
           </Link>
         </p>
       </div>

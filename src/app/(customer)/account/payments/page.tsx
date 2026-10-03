@@ -16,23 +16,26 @@ export default function TransactionsPage() {
                   Reference
                 </th>
                 <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Date
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Type
+                  Order No.
                 </th>
                 <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
                   Amount
                 </th>
                 <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
+                  Method
+                </th>
+                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
                   Status
+                </th>
+                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
+                  Date
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-[18px] py-10 text-center text-sm text-muted"
                 >
                   No transactions yet. Your payment history will appear here.

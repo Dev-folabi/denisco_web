@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Package, CreditCard, CalendarCheck, UserCheck } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-provider";
 
 const STATS = [
   { label: "Total Orders", value: "0", icon: Package },
@@ -11,11 +12,15 @@ const STATS = [
 ];
 
 export default function AccountDashboard() {
+  const { user } = useAuth();
   return (
     <>
-      <h1 className="mb-6 text-[34px] font-semibold max-[760px]:text-[clamp(25px,8vw,34px)]">
-        My Account
+      <h1 className="mb-1 text-[34px] font-semibold max-[760px]:text-[clamp(25px,8vw,34px)]">
+        Welcome back{user?.first_name ? `, ${user.first_name}` : ""}
       </h1>
+      <p className="mb-6 text-muted">
+        Here&rsquo;s a quick overview of your account activity.
+      </p>
 
       {/* Stat cards */}
       <div className="mb-[34px] grid grid-cols-4 gap-5 max-[1024px]:grid-cols-2 max-[420px]:grid-cols-1 max-sm:gap-3 max-sm:mb-[18px]">

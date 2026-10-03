@@ -44,8 +44,8 @@ export default function ServicesPage() {
   return (
     <>
       <PageHero
-        title="Our Services"
-        description="Comprehensive agricultural services spanning the entire value chain — from seed to market."
+        title="Our Agricultural Services"
+        description="Integrated agriculture, quality production and sustainable value across the agricultural value chain."
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Services" },
@@ -53,8 +53,18 @@ export default function ServicesPage() {
       />
 
       {/* Service Detail Grid */}
-      <section className="px-6 py-24 max-sm:py-16">
+      <section className="bg-white px-6 py-24 max-sm:py-16">
         <div className="container">
+          <div className="mb-[54px] text-center">
+            <span className="eyebrow mb-4">Integrated Agriculture</span>
+            <h2 className="text-[38px] font-semibold max-sm:text-[31px]">
+              Services Built for Productive Growth
+            </h2>
+            <p className="mx-auto mt-3 max-w-[560px] text-muted">
+              From quality planting materials to farm management, training and
+              value addition.
+            </p>
+          </div>
           <div className="grid grid-cols-3 gap-[22px] max-[1024px]:grid-cols-2 max-sm:grid-cols-1">
             {SITE.services.map((service) => {
               const Icon = SERVICE_ICONS[service.icon] || Sprout;
@@ -91,10 +101,10 @@ export default function ServicesPage() {
 
       {/* Value Chain + CTA */}
       <section className="bg-cream-deep px-6 py-24 max-sm:py-16">
-        <div className="container text-center">
-          <span className="eyebrow mb-4">Integrated Value Chain</span>
+        <div className="container text-center" style={{ maxWidth: "980px" }}>
+          <span className="eyebrow mb-4">Denisco Agricultural Value Chain</span>
           <h2 className="text-[38px] font-semibold max-sm:text-[31px]">
-            From Seed to Market
+            Connected Enterprises. Responsible Value.
           </h2>
           <div className="mx-auto my-6 flex max-w-[700px] flex-wrap items-center justify-center gap-[9px]">
             {SITE.company.integratedFlow.map((step, i) => (
@@ -108,12 +118,16 @@ export default function ServicesPage() {
               </span>
             ))}
           </div>
+          <p className="mx-auto mb-0 mt-4 max-w-[560px] text-muted">
+            This integrated approach supports better resource utilization,
+            reduced waste, diversification and greater resilience.
+          </p>
           <div className="mt-10">
             <Link
               href="/consultation"
               className="inline-flex items-center gap-[9px] rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive"
             >
-              Book a Consultation <ArrowRight size={16} />
+              Book a Consultation
             </Link>
           </div>
         </div>

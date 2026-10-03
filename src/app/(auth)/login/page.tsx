@@ -44,8 +44,11 @@ function LoginForm() {
             height={60}
             className="mx-auto mb-4 size-[60px] rounded-full border border-line object-cover"
           />
-          <h1 className="text-[28px] font-semibold">Welcome Back</h1>
-          <p className="text-sm text-muted">Sign in to your account</p>
+          <h1 className="text-[28px] font-semibold">Customer Login</h1>
+          <p className="text-sm text-muted">
+            Use <strong>demo@denisco.com</strong> / <strong>demo123</strong>,
+            or register a new account.
+          </p>
         </div>
 
         {error && (
@@ -94,18 +97,14 @@ function LoginForm() {
             disabled={loading}
             className="w-full rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive disabled:cursor-not-allowed disabled:opacity-45"
           >
-            {loading ? "Signing in…" : "Sign In"}
+            {loading ? "Signing in…" : "Login"}
           </button>
         </form>
-
-        <div className="mt-4 rounded-[10px] bg-cream-deep p-3 text-center text-xs text-muted">
-          <strong>Demo:</strong> demo@denisco.com / demo123
-        </div>
 
         <p className="mt-6 text-center text-sm text-muted">
           Don&rsquo;t have an account?{" "}
           <Link href="/register" className="font-bold text-olive hover:text-forest">
-            Register
+            Register here
           </Link>
         </p>
       </div>

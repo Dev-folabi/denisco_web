@@ -78,7 +78,7 @@ function ResetPasswordForm() {
               href="/login"
               className="inline-block rounded-full bg-forest px-7 py-[13px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive"
             >
-              Sign In
+              Login
             </Link>
           </div>
         ) : (
@@ -125,7 +125,7 @@ function ResetPasswordForm() {
             href="/login"
             className="font-bold text-olive hover:text-forest"
           >
-            Sign In
+            Login here
           </Link>
         </p>
       </div>

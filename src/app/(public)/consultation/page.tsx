@@ -12,7 +12,7 @@ const DEMO_TYPES = [
     duration: "60 mins",
     price: 1500000,
     description:
-      "One-on-one guidance for individuals or groups planning to start a farming business.",
+      "One-on-one guidance for individuals or groups planning to start a poultry, livestock, or crop farming business.",
   },
   {
     id: "CT-02",
@@ -24,11 +24,27 @@ const DEMO_TYPES = [
   },
   {
     id: "CT-03",
-    name: "Livestock Management Consultation",
+    name: "Livestock (Ruminant) Management Consultation",
     duration: "60 mins",
     price: 1500000,
     description:
-      "Expert guidance on cattle, goat, sheep rearing, breeding and pasture management.",
+      "Expert guidance on cattle, goat, sheep and ram rearing, breeding and pasture management.",
+  },
+  {
+    id: "CT-04",
+    name: "Piggery & Snail Farming Consultation",
+    duration: "45 mins",
+    price: 1000000,
+    description:
+      "Support for setting up or improving a piggery or snail farming operation, including housing and feeding.",
+  },
+  {
+    id: "CT-05",
+    name: "Crop Production & Soil Advisory",
+    duration: "60 mins",
+    price: 1500000,
+    description:
+      "Guidance on land preparation, crop selection, planting schedules and post-harvest handling.",
   },
 ];
 
@@ -54,22 +70,24 @@ export default function ConsultationPage() {
   return (
     <>
       <PageHero
-        title="Book a Consultation"
-        description="Get expert agricultural guidance from our experienced team."
+        title="Book an Agricultural Consultation"
+        description="Get practical, one-on-one guidance from our team on poultry, livestock, piggery, snail or crop farming."
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Consultation" },
         ]}
       />
 
-      <section className="px-6 py-24 max-sm:py-16">
+      <section className="bg-white px-6 py-24 max-sm:py-16">
         <div className="container">
           {/* Type cards */}
           <div className="mb-10">
-            <span className="eyebrow mb-4">Step 1</span>
-            <h2 className="mb-6 text-[28px] font-semibold">
-              Select Consultation Type
-            </h2>
+            <div className="mb-[54px] text-center">
+              <span className="eyebrow mb-4">Consultation Types</span>
+              <h2 className="text-[38px] font-semibold max-sm:text-[31px]">
+                Choose a Session That Fits Your Needs
+              </h2>
+            </div>
             <div className="grid grid-cols-3 gap-7 max-[1024px]:grid-cols-2 max-sm:grid-cols-1">
               {DEMO_TYPES.map((type) => (
                 <button
@@ -82,7 +100,7 @@ export default function ConsultationPage() {
                       : "border-line bg-white hover:border-olive"
                   }`}
                 >
-                  <h3 className="mb-2 text-[17px] font-semibold">
+                  <h3 className="mb-2 text-[19px] font-semibold">
                     {type.name}
                   </h3>
                   <p className="mb-3 text-[13px] text-muted">
@@ -100,13 +118,19 @@ export default function ConsultationPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
+      <section className="bg-cream-deep px-6 py-24 max-sm:py-16">
+        <div className="container">
           {/* Booking form card */}
-          <div className="rounded-[18px] border border-line bg-white p-8 shadow-[var(--shadow-default)] max-sm:p-5">
+          <div className="mx-auto max-w-[760px] rounded-[18px] border border-line bg-white p-9 shadow-[var(--shadow-default)] max-sm:p-[22px]">
+            <h3 className="mb-6 text-xl font-semibold">Booking Details</h3>
             {/* Date scroller */}
             <div className="mb-8">
-              <span className="eyebrow mb-4">Step 2</span>
-              <h3 className="mb-4 text-xl font-semibold">Select Date</h3>
+              <label className="mb-3 block text-[13px] font-bold text-forest">
+                Preferred Date
+              </label>
               <div className="flex gap-2.5 overflow-x-auto pb-3 max-[480px]:gap-2 [scrollbar-color:var(--color-olive-light)_var(--color-cream-deep)] [scrollbar-width:thin] [scroll-snap-type:x_mandatory]">
                 {dates.map((date) => {
                   const key = date.toISOString().slice(0, 10);
@@ -147,8 +171,9 @@ export default function ConsultationPage() {
 
             {/* Time slot grid */}
             <div className="mb-8">
-              <span className="eyebrow mb-4">Step 3</span>
-              <h3 className="mb-4 text-xl font-semibold">Select Time</h3>
+              <label className="mb-3 block text-[13px] font-bold text-forest">
+                Preferred Time
+              </label>
               <div className="grid grid-cols-4 gap-2.5 max-sm:grid-cols-2">
                 {TIME_SLOTS.map((time) => (
                   <button
@@ -169,8 +194,6 @@ export default function ConsultationPage() {
 
             {/* Contact form */}
             <div>
-              <span className="eyebrow mb-4">Step 4</span>
-              <h3 className="mb-4 text-xl font-semibold">Your Details</h3>
               <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1">
                 <div>
                   <label className="mb-2 block text-[13px] font-bold text-forest">
@@ -205,12 +228,12 @@ export default function ConsultationPage() {
               </div>
               <div className="mt-5">
                 <label className="mb-2 block text-[13px] font-bold text-forest">
-                  Additional Notes
+                  Describe Your Consultation Needs
                 </label>
                 <textarea
                   rows={3}
                   className="w-full resize-y rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
-                  placeholder="Anything you'd like us to know…"
+                  placeholder="Briefly describe what you'd like to discuss"
                 />
               </div>
               <button
@@ -218,7 +241,7 @@ export default function ConsultationPage() {
                 className="mt-6 inline-flex items-center gap-[9px] rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive disabled:cursor-not-allowed disabled:opacity-45"
                 disabled={!selectedType || !selectedDate || !selectedTime}
               >
-                Book Consultation <ArrowRight size={16} />
+                Submit Booking
               </button>
             </div>
           </div>
@@ -227,3 +250,4 @@ export default function ConsultationPage() {
     </>
   );
 }
+

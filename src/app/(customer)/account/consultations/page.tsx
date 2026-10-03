@@ -27,15 +27,12 @@ export default function MyBookingsPage() {
                 <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
                   Status
                 </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Action
-                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={5}
                   className="px-[18px] py-10 text-center text-sm text-muted"
                 >
                   No consultation bookings yet. Book one from the{" "}

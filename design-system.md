@@ -3,6 +3,8 @@
 **Extracted from:** `denisco_prototype.html` (the source of truth)
 **Implementation:** Tailwind CSS custom theme + shadcn/ui component overrides
 
+> **MANDATORY:** Always read and follow this file AND `denisco_prototype.html` before implementing any UI component or page. All values here are extracted directly from the prototype CSS. Do not guess — use the exact tokens listed.
+
 ---
 
 ## 1. Color Palette
@@ -117,6 +119,22 @@ fontFamily: {
 | Price (card) | 11.5px | — | Sans | `muted` |
 | Muted text | 13-13.5px | 400 | Sans | `muted` |
 | Table header | 11.5px | 800 | Sans | `forest` |
+
+### Global Heading CSS Rule (required in `globals.css`)
+
+The prototype sets all `h1`–`h4` globally to Fraunces serif. This rule **must** exist in `globals.css` so headings render correctly even without an explicit `font-heading` class:
+
+```css
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);   /* Fraunces */
+  color: var(--color-forest);         /* #173620 */
+  margin: 0 0 0.45em;
+  line-height: 1.15;
+  font-weight: 600;
+}
+```
+
+Tailwind utility classes (`text-muted`, `text-ink`, etc.) override the element-level color when needed.
 
 ---
 
@@ -281,7 +299,40 @@ Selected: `border-color: olive; background: cream-deep;`
 
 ---
 
-## 9. Navigation
+## 9. Header Top Bar
+
+The prototype shows a `header-top` strip at the very top of every page, **inside** the sticky `<header>` element, above the main nav row.
+
+```
+Background:  var(--color-forest-deep)  → #0E2213
+Text color:  #cfe3c6
+Font size:   12px
+Padding:     7px 24px
+Layout:      flex, items-center, justify-between, max-width 1220px centered
+Left:        SITE.company.tagline  (hidden on mobile, sm:block)
+Right:       SITE.company.phone + SITE.company.email (email hidden on mobile)
+```
+
+Implementation:
+```tsx
+<div className="bg-[#0E2213] text-[#cfe3c6]">
+  <div className="mx-auto flex max-w-[1220px] items-center justify-between gap-3 px-6 py-[7px] text-[12px] max-sm:px-[18px]">
+    <span className="hidden sm:block">{SITE.company.tagline}</span>
+    <div className="ml-auto flex items-center gap-4">
+      <a href={`tel:${SITE.company.phone}`} className="transition-colors hover:text-white">
+        {SITE.company.phone}
+      </a>
+      <a href={`mailto:${SITE.company.email}`} className="hidden transition-colors hover:text-white sm:block">
+        {SITE.company.email}
+      </a>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## 10. Navigation
 
 ### Main Nav (Desktop)
 - Horizontal links with underline animation (center-out, 2px olive)
@@ -308,7 +359,7 @@ Selected: `border-color: olive; background: cream-deep;`
 
 ---
 
-## 10. Specific Component Specs
+## 11. Specific Component Specs
 
 ### Hero Badge (floating on hero image)
 ```css
@@ -438,7 +489,7 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 
 ---
 
-## 11. Icons
+## 12. Icons
 
 **Library:** Lucide React (maps to Font Awesome icons used in prototype)
 
@@ -494,7 +545,7 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 
 ---
 
-## 12. Animations & Transitions
+## 13. Animations & Transitions
 
 | Element | Property | Duration | Easing |
 |---|---|---|---|
@@ -510,7 +561,7 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 
 ---
 
-## 13. Currency Formatting
+## 14. Currency Formatting
 
 ```typescript
 function Money(amount: number): string {
@@ -523,7 +574,7 @@ function Money(amount: number): string {
 
 ---
 
-## 14. Image Handling
+## 15. Image Handling
 
 - Product images: served via ImageKit URL endpoint
 - Fallback image: `assets/media/hero-crop-field.jpg` (from prototype)

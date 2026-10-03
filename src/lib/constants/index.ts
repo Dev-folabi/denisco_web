@@ -9,7 +9,7 @@ export const SITE = {
       "3 Martin Luther King Street, 5th Avenue, Gwarimpa, Abuja, Nigeria",
     phone: "+234 808 627 3838",
     email: "info@deniscoglobalagroltd.com",
-    hours: "Mon – Sat: 8:00 AM – 5:00 PM",
+    hours: "Mon to Sat: 8:00 AM to 6:00 PM",
     integratedFlow: [
       "Seed",
       "Crop",
@@ -101,10 +101,11 @@ export const SITE = {
     ],
   },
   ceo: {
-    name: "Dennis Isong",
-    title: "Founder & CEO",
+    name: "Uzochukwu, Chukwudi Paulinus Prince",
+    title: "Chief Executive Officer",
+    hero_quote: "Our commitment is to grow with nature, produce carefully, care for our animals and equip the next generation of farmers.",
     quote:
-      "Agriculture is not just a business — it is a covenant with the land, a promise to the community, and a legacy for the future.",
+      "We are committed to a farm where soil remains productive, animals are cared for, food is produced responsibly, people grow in knowledge and communities benefit.",
   },
   deliveryFee: 2500,
   currency: "NGN",

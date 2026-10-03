@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Dashboard", href: "/account", icon: LayoutDashboard },
-  { label: "My Orders", href: "/account/orders", icon: Package },
-  { label: "My Consultations", href: "/account/consultations", icon: CalendarCheck },
-  { label: "Transaction History", href: "/account/payments", icon: CreditCard },
+  { label: "Dashboard", shortLabel: "Home", href: "/account", icon: LayoutDashboard },
+  { label: "My Orders", shortLabel: "Orders", href: "/account/orders", icon: Package },
+  { label: "My Consultations", shortLabel: "Bookings", href: "/account/consultations", icon: CalendarCheck },
+  { label: "Transaction History", shortLabel: "Payments", href: "/account/payments", icon: CreditCard },
 ];
 
 export default function AccountLayout({
@@ -104,7 +104,7 @@ export default function AccountLayout({
             >
               <link.icon size={isActive(link.href) ? 15 : 14} />
             </span>
-            {link.label.replace("My ", "").replace("Transaction History", "Transactions")}
+            {link.shortLabel}
           </Link>
         ))}
         <button

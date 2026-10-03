@@ -14,7 +14,7 @@ export default function ContactPage() {
     <>
       <PageHero
         title="Contact Us"
-        description="We'd love to hear from you. Reach out for enquiries, orders, or consultation bookings."
+        description="We'd love to hear from you. Reach out with any questions about our products or services."
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Contact" },
@@ -28,7 +28,7 @@ export default function ContactPage() {
             {[
               {
                 icon: MapPin,
-                label: "Address",
+                label: "Business Address",
                 text: SITE.company.address,
               },
               {
@@ -73,30 +73,32 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="rounded-[18px] border border-line bg-white p-8 shadow-[var(--shadow-default)]">
+          <div className="rounded-[18px] border border-line bg-white p-9 shadow-[var(--shadow-default)]">
             <h3 className="mb-[22px] text-xl font-semibold">
               Send Us a Message
             </h3>
             <form>
-              <div className="mb-5">
-                <label className="mb-2 block text-[13px] font-bold text-forest">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none transition-colors focus:border-olive"
-                  placeholder="Your name"
-                />
-              </div>
-              <div className="mb-5">
-                <label className="mb-2 block text-[13px] font-bold text-forest">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none transition-colors focus:border-olive"
-                  placeholder="you@example.com"
-                />
+              <div className="mb-5 grid grid-cols-2 gap-5 max-sm:grid-cols-1">
+                <div>
+                  <label className="mb-2 block text-[13px] font-bold text-forest">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none transition-colors focus:border-olive"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-[13px] font-bold text-forest">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none transition-colors focus:border-olive"
+                    placeholder="you@example.com"
+                  />
+                </div>
               </div>
               <div className="mb-5">
                 <label className="mb-2 block text-[13px] font-bold text-forest">
