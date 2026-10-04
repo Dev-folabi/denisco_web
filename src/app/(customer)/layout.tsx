@@ -9,7 +9,7 @@ export default function CustomerLayout({
   return (
     <>
       <SiteHeader />
-      {children}
+      <main id="app-view">{children}</main>
       <SiteFooter />
     </>
   );

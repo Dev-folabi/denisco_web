@@ -1,32 +1,31 @@
 interface StockBadgeProps {
-  stock: number;
+  stock?: number;
   className?: string;
+  inline?: boolean;
 }
 
-export function StockBadge({ stock, className = "" }: StockBadgeProps) {
-  if (stock <= 0) {
-    return (
-      <span
-        className={`inline-block rounded-full bg-badge-red-bg px-[11px] py-[5px] text-[10.5px] font-extrabold text-badge-red-text ${className}`}
-      >
-        Out of Stock
-      </span>
-    );
+export function StockBadge({
+  stock,
+  className = "",
+  inline = false,
+}: StockBadgeProps) {
+  let variant = "badge-green";
+  let label = "In Stock";
+
+  if (!stock || stock <= 0) {
+    variant = "badge-red";
+    label = "Out of Stock";
+  } else if (stock <= 10) {
+    variant = "badge-amber";
+    label = "Low Stock";
   }
-  if (stock <= 10) {
-    return (
-      <span
-        className={`inline-block rounded-full bg-badge-amber-bg px-[11px] py-[5px] text-[10.5px] font-extrabold text-badge-amber-text ${className}`}
-      >
-        Low Stock
-      </span>
-    );
-  }
+
   return (
     <span
-      className={`inline-block rounded-full bg-badge-green-bg px-[11px] py-[5px] text-[10.5px] font-extrabold text-badge-green-text ${className}`}
+      className={`stock-badge ${variant} ${className}`.trim()}
+      style={inline ? { position: "static" } : undefined}
     >
-      In Stock
+      {label}
     </span>
   );
 }

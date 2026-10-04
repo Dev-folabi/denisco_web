@@ -111,8 +111,9 @@ fontFamily: {
 | h2 (section) | 38px (mobile: 28-31px) | 600 | Serif | `forest` |
 | h3 | 19px | 600 | Serif | `forest` |
 | h4 | 16.5px | 600 | Serif | `forest` |
-| Body text | 14-15px | 400 | Sans | `ink` |
+| Body text | 16px (page base; prototype body sets no font-size) | 400 | Sans | `ink` |
 | Body line-height | 1.65 | — | — | — |
+| Inputs / selects / textarea | 14px | 400 | Sans | — |
 | Button text | 14px (sm: 12.5px) | 700 | Sans | — |
 | Eyebrow | 11.5px | 800 | Sans | `olive` |
 | Price (large) | 28px | 700 | Serif | `forest` |
@@ -168,14 +169,19 @@ Tailwind utility classes (`text-muted`, `text-ink`, etc.) override the element-l
 | Circle | `50%` | Avatar, icon buttons, service icons |
 
 ### Tailwind Mapping
-```typescript
-borderRadius: {
-  lg: '28px',
-  md: '18px',
-  sm: '10px',
-  full: '9999px', // pills
-},
-```
+
+**Do NOT remap Tailwind's built-in `rounded-sm/lg/xl/2xl/3xl` tokens** (they are used by shadcn/ui internals and have Tailwind defaults). Instead use the CSS vars or arbitrary values:
+
+| Prototype radius | Use |
+|---|---|
+| `28px` (`--r-lg`) | `var(--r-lg)` in CSS / `rounded-[28px]` |
+| `24px` (modal, rounded nav panel) | `rounded-3xl` (Tailwind default = 24px) or `rounded-[24px]` |
+| `20px` (mobile modal top) | `rounded-t-[20px]` |
+| `18px` (`--r-md`) | `rounded-[18px]` |
+| `14px` (cart thumbs, stacked rows) | `rounded-[14px]` / `rounded-[13px]` per prototype |
+| `12px` (off-canvas nav links) | `rounded-xl` (Tailwind default = 12px) |
+| `10px` (`--r-sm`) | `rounded-[10px]` |
+| Pill `100px`/`9999px` | `rounded-full` |
 
 ---
 
@@ -299,35 +305,29 @@ Selected: `border-color: olive; background: cream-deep;`
 
 ---
 
-## 9. Header Top Bar
+## 9. Header
 
-The prototype shows a `header-top` strip at the very top of every page, **inside** the sticky `<header>` element, above the main nav row.
+> **Note:** The prototype's rendered markup (lines 571–609) has **no `header-top` strip** — the `.header-top-inner` CSS rule is stale/unused. Do not implement a top bar.
+
+Actual structure — single sticky row inside `<header>`:
 
 ```
-Background:  var(--color-forest-deep)  → #0E2213
-Text color:  #cfe3c6
-Font size:   12px
-Padding:     7px 24px
-Layout:      flex, items-center, justify-between, max-width 1220px centered
-Left:        SITE.company.tagline  (hidden on mobile, sm:block)
-Right:       SITE.company.phone + SITE.company.email (email hidden on mobile)
-```
-
-Implementation:
-```tsx
-<div className="bg-[#0E2213] text-[#cfe3c6]">
-  <div className="mx-auto flex max-w-[1220px] items-center justify-between gap-3 px-6 py-[7px] text-[12px] max-sm:px-[18px]">
-    <span className="hidden sm:block">{SITE.company.tagline}</span>
-    <div className="ml-auto flex items-center gap-4">
-      <a href={`tel:${SITE.company.phone}`} className="transition-colors hover:text-white">
-        {SITE.company.phone}
-      </a>
-      <a href={`mailto:${SITE.company.email}`} className="hidden transition-colors hover:text-white sm:block">
-        {SITE.company.email}
-      </a>
-    </div>
-  </div>
-</div>
+header: position sticky; top 0; z-index 200; bg cream; border-bottom 1px line
+  └ container header-main-inner (padding 18px 24px; ≤640 → 12px 18px; ≤390 → 10px 12px)
+      ├ brand: logo 54px circle (≤640 → 44px) + text stack
+      │   strong: Fraunces 17px bold, tracking .2px, forest (≤640 → 14px)
+      │   small: 10.5px bold uppercase tracking 1.6px, olive (≤640 → 8.5px / 1.2px)
+      │   brand text hidden entirely ≤390px
+      ├ nav (≥1241px): centered horizontal links, 14px/600, olive underline animation
+      │   ≤1240px: off-canvas right panel, width min(82vw,300px), scrim,
+      │            links 15px rounded 12px, cream-deep hover, "Explore Denisco" head
+      │   ≤760px: panel becomes floating card (inset 8px, radius 24px, border)
+      └ actions (.header-actions: gap 10px; 7px ≤640; 5px ≤390; ml-auto ≤1240):
+          + search form (.header-search, hidden ≤1240)
+          + cart .icon-btn 42px (40px ≤640, 38px ≤390) with .cart-badge
+          + login/account .btn.btn-primary.btn-sm
+            (≤640 → 42px circle, padding 0, inner text span hidden; 38px ≤390)
+          + menu toggle .icon-btn.menu-toggle (display:none ≥1241; flex ≤1240)
 ```
 
 ---
@@ -493,6 +493,8 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 
 **Library:** Lucide React (maps to Font Awesome icons used in prototype)
 
+> **Brand icons:** `lucide-react` no longer exports `Facebook`/`Instagram`/`Twitter`. Footer socials use inline SVGs in `src/components/layout/social-icons.tsx` (`FacebookIcon`, `InstagramIcon`, `XIcon`, `WhatsAppIcon`).
+
 | Prototype (FA) | Lucide Equivalent |
 |---|---|
 | `fa-seedling` | `Sprout` |
@@ -528,11 +530,12 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 | `fa-tag` | `Tag` |
 | `fa-gauge` | `Gauge` |
 | `fa-box` | `Package` |
-| `fa-sack-dollar` | `DollarSign` |
+| `fa-sack-dollar` | `Coins` (or `DollarSign`) |
 | `fa-calendar-check` | `CalendarCheck` |
 | `fa-receipt` | `Receipt` |
 | `fa-right-from-bracket` | `LogOut` |
 | `fa-location-dot` | `MapPin` |
+| `fa-map-signs` | `Signpost` (**not** `MapSigns` — it does not exist in lucide-react) |
 | `fa-phone` | `Phone` |
 | `fa-envelope` | `Mail` |
 | `fa-clock` | `Clock` |
@@ -542,6 +545,7 @@ Watermark: serif, `min(18vw, 220px)`, `rgba(255,255,255,.03)`, bottom positioned
 | `fa-shield-heart` | `ShieldCheck` |
 | `fa-lightbulb` | `Lightbulb` |
 | `fa-people-group` | `Users` |
+| `fa-triangle-exclamation` | `TriangleAlert` |
 
 ---
 
@@ -576,11 +580,37 @@ function Money(amount: number): string {
 
 ## 15. Image Handling
 
-- Product images: served via ImageKit URL endpoint
-- Fallback image: `assets/media/hero-crop-field.jpg` (from prototype)
-- Hero image: crop field photograph
+- Static images live in **`denisco_web/public/images/`** (copied from the prototype's `assets/media/`) and are referenced as **`/images/<filename>`** (e.g. `/images/local-chickens.png`, `/images/hero-crop-field.jpg`). The prototype's `assets/media/...` paths are relative to the prototype file only — never use them in the app.
+- Product images (future): served via ImageKit URL endpoint
 - Product card images: `height: 210px; object-fit: cover; border-radius: 18px;`
 - Product detail image: blob shape `border-radius: 44% 56% 60% 40%/50% 45% 55% 50%; height: 460px;`
 - CEO photo: blob shape `border-radius: 60% 40% 45% 55%/50% 60% 40% 50%;`
 - Cart thumbnails: `74px × 74px; object-fit: cover; border-radius: 14px;`
 - Admin product thumbnails: `48px × 48px; object-fit: cover; border-radius: 10px;`
+
+---
+
+## 16. Responsive Breakpoints (from prototype)
+
+All prototype breakpoints, in cascade order (later rules win):
+
+| Max width | Key behavior |
+|---|---|
+| **1240px** | Header nav becomes off-canvas right panel; header search hidden; header main row `justify-content: space-between`; off-canvas link refinements (rounded 12px, cream-deep hover, "Explore Denisco" panel head, scrim) |
+| **1024px** | `.hero-inner`, `.ceo-section`, `.split`, `.pd-grid`, `.cart-layout`, `.video-two-col`, `.contact-grid`, `.policy-layout` → single column; `.grid-3`/`.grid-4`/`.stat-cards`/`.service-detail-grid`/`.policy-nav` → 2 columns; `.hero-media img` → 340px; `.dash-shell` → single column (sidebar `order:2`, content `order:1`) |
+| **860px** | Footer grid → `1fr 1fr` |
+| **760px** | Hero/pd-grid/cart-layout/contact-grid stack; hero image → 300px, hero h1 → `clamp(30px,10vw,40px)`, hero badge max-width + compact padding; page-hero padding 54px; nav panel becomes floating card (inset 8px, radius 24, border); cart row → `64px minmax(0,1fr)` with `nth-child(n+3)` reflow to column 2; `.dash-side` hidden + `.account-mobile-nav` fixed bottom bar; **account tables stack**: `thead` hidden, rows become cards, each `td` shows `data-label` (`::before`) left, value right, dotted separators; toast max-width → none |
+| **640px** | Container side padding → 18px; `.section` padding → 64px; `.section-head h2` → 31px; hero badge → `left:0; bottom:-16px`; all `.grid-2/3/4` → 1 column; header actions compact (actions gap 7px, `.icon-btn` → 40px, account btn → 42px circle icon-only, label span hidden); footer grid → 1 column; cart row → `56px 1fr` + `row-gap:10px`; `.stat-cards` → `repeat(2, minmax(0,1fr))`; `.panel-head > div` → full width; form rows stack; slot grid → 2 columns |
+| **480px** | Booking date buttons compact (70px basis) |
+| **420px** | Account stat cards → 1 column; stacked `td` gap 8px, label basis 38%; order-detail-card padding 15px |
+| **390px** | Header: padding 10px 12px, brand text hidden, action gap 5px, buttons 38px; `.section-head h2` → 28px; stat cards → 1 column; service-row padding 24px; policy intro/promise padding 20px 16px |
+
+### Stacked tables (≤760px)
+
+Tables inside `.dash-shell` (`.account-table`) and `.order-detail-card .table-wrap` (`.responsive-stack-table`) stack via `data-label` on every `<td>` — the `data-label` value is the prototype's own (often shorter than the `<th>`, e.g. `Order` for "Order No.", `Unit price` for "Unit Price", `Consultation` for "Type"). Keep labels verbatim from the prototype.
+
+### In Tailwind
+
+Use **inclusive** arbitrary media variants: `[@media(max-width:Npx)]:…` (compiles verbatim). Do **not** use Tailwind's `max-[Npx]:` or `max-sm:` — v4 compiles them to `@media not all and (min-width:Npx)`, which is **exclusive of exactly N** (a 390px iPhone would miss every `max-[390px]:` rule). Also do not use `max-md`/`max-lg` (480/768 don't match the prototype).
+
+Compiled order of `[@media(max-width:Npx)]:` blocks is **not** width-descending (observed: 1240 → 390 → 640 → 760), so when one element carries utilities from two tiers that set the same property, the wider tier's block can come later and wrongly win at ≤390 (e.g. `size-10` at 640 beating `size-[38px]` at 390). Fix by adding `!` to the narrower tier's utility (`[@media(max-width:390px)]:size-[38px]!`) — see `site-header.tsx` and `section-head.tsx`. Where the prototype uses a reusable class (`.icon-btn`, `.header-actions`), prefer an unlayered rule in `globals.css` (unlayered beats all layered utilities regardless of order).

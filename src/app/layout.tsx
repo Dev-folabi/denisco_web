@@ -7,6 +7,8 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   display: "swap",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
 });
 
 const manrope = Manrope({
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | DENISCO",
   },
   description:
-    "Nigeria's leading integrated agriculture company offering quality farm products, livestock, poultry, crop farming, and expert agricultural consultation services.",
+    "DENISCO GLOBAL AGRICULTURE LTD, poultry, livestock, piggery, snail and crop farming, agricultural produce sales and expert farm consultation in Nigeria.",
 };
 
 export default function RootLayout({
@@ -33,6 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body>
+        <a href="#app-view" className="skip-link">
+          Skip to content
+        </a>
         <Providers>{children}</Providers>
       </body>
     </html>

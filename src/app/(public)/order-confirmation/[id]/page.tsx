@@ -1,99 +1,180 @@
 import Link from "next/link";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, TriangleAlert } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MoneyFromKobo, fmtDateTime } from "@/lib/utils/format";
 
-export default function OrderConfirmationPage() {
+interface OrderItem {
+  product_id: string;
+  name: string;
+  unit: string;
+  price: number;
+  quantity: number;
+  subtotal: number;
+}
+
+interface Order {
+  id: string;
+  order_number: string;
+  items: OrderItem[];
+  subtotal: number;
+  delivery_fee: number;
+  total: number;
+  payment_status: string;
+  fulfillment: string;
+  delivery_method: string;
+  address?: string;
+  payment_method: string;
+  payment_ref: string;
+  created_at: string;
+}
+
+function statusPill(status: string) {
+  const map: Record<string, string> = {
+    pending: "badge-amber",
+    paid: "badge-green",
+    failed: "badge-red",
+    processing: "badge-blue",
+    dispatched: "badge-blue",
+    completed: "badge-green",
+    cancelled: "badge-red",
+    confirmed: "badge-green",
+    success: "badge-green",
+  };
+  const label = status.charAt(0).toUpperCase() + status.slice(1);
   return (
-    <section className="px-6 py-24 max-sm:py-16">
-      <div className="mx-auto max-w-[760px]">
-        {/* Success state */}
-        <div className="mb-7 py-11 text-center">
-          <CheckCircle
-            size={58}
-            className="mx-auto mb-[18px] text-olive"
+    <span className={`status-pill ${map[status] ?? "badge-grey"}`}>{label}</span>
+  );
+}
+
+export default async function OrderConfirmationPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const orders: Order[] = [];
+  const order = orders.find((o) => o.id === id) ?? null;
+
+  if (!order) {
+    return (
+      <section className="section">
+        <div className="container">
+          <EmptyState
+            icon={TriangleAlert}
+            title="Order Not Found"
+            description="This order could not be located."
+            ctaLabel="Back to Shop"
+            ctaHref="/shop"
           />
-          <h2 className="mb-2 text-[28px] font-semibold">
-            Thank You! Your Order Is Confirmed
-          </h2>
-          <p className="text-muted">
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="section">
+      <div className="container" style={{ maxWidth: "760px" }}>
+        <div className="pay-state success">
+          <CheckCircle size={58} className="pay-icon block" />
+          <h2>Thank You! Your Order Is Confirmed</h2>
+          <p className="muted">
             A confirmation has been recorded to your account.
           </p>
         </div>
 
-        {/* Order detail card */}
-        <div className="mb-7 rounded-[18px] border border-line bg-white p-7 shadow-[var(--shadow-default)] max-[760px]:p-[18px]">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="card order-detail-card" style={{ marginBottom: 22 }}>
+          <div className="panel-head">
             <div>
-              <h3 className="m-0 text-[22px] font-semibold">Order DG-000000</h3>
-              <span className="text-xs text-muted">Placed on —</span>
+              <h3 style={{ marginBottom: 4 }}>Order {order.order_number}</h3>
+              <small className="muted">
+                Placed on {fmtDateTime(order.created_at)}
+              </small>
             </div>
-            <div className="flex gap-2">
-              <span className="inline-block rounded-full bg-badge-green-bg px-[13px] py-[5px] text-[11.5px] font-extrabold text-badge-green-text">
-                Paid
-              </span>
-              <span className="inline-block rounded-full bg-badge-blue-bg px-[13px] py-[5px] text-[11.5px] font-extrabold text-badge-blue-text">
-                Processing
-              </span>
+            <div>
+              {statusPill(order.payment_status)} {statusPill(order.fulfillment)}
             </div>
           </div>
 
-          <div className="mb-6 overflow-x-auto rounded-[18px] border border-line">
-            <table className="w-full min-w-[480px] border-collapse">
+          <div className="table-wrap">
+            <table className="responsive-stack-table">
               <thead>
                 <tr>
-                  <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                    Product
-                  </th>
-                  <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                    Price
-                  </th>
-                  <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                    Qty
-                  </th>
-                  <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                    Total
-                  </th>
+                  <th>Product</th>
+                  <th>Unit Price</th>
+                  <th>Qty</th>
+                  <th>Subtotal</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-[18px] py-6 text-center text-sm text-muted"
-                  >
-                    Order items will load from API.
-                  </td>
-                </tr>
+                {order.items.map((item) => (
+                  <tr key={item.product_id}>
+                    <td data-label="Product">{item.name}</td>
+                    <td data-label="Unit price">
+                      {MoneyFromKobo(item.price)} / {item.unit}
+                    </td>
+                    <td data-label="Quantity">{item.quantity}</td>
+                    <td data-label="Subtotal">
+                      {MoneyFromKobo(item.subtotal)}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
-          <div className="ml-auto max-w-[300px]">
-            <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
+          <div style={{ maxWidth: 280, marginLeft: "auto", marginTop: 18 }}>
+            <div className="summary-line">
               <span>Subtotal</span>
-              <span>₦0</span>
+              <span>{MoneyFromKobo(order.subtotal)}</span>
             </div>
-            <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
+            <div className="summary-line">
               <span>Delivery Fee</span>
-              <span>₦0</span>
+              <span>{MoneyFromKobo(order.delivery_fee)}</span>
             </div>
-            <div className="mt-2.5 flex justify-between pt-4 text-lg font-extrabold text-forest">
+            <div className="summary-line total">
               <span>Total</span>
-              <span>₦0</span>
+              <span>{MoneyFromKobo(order.total)}</span>
+            </div>
+          </div>
+
+          <hr
+            style={{
+              border: "none",
+              borderTop: "1px dashed var(--color-line)",
+              margin: "22px 0",
+            }}
+          />
+
+          <div className="grid grid-2">
+            <div>
+              <h4>Delivery Information</h4>
+              <p className="muted" style={{ fontSize: 13.5 }}>
+                Method:{" "}
+                {order.delivery_method === "delivery"
+                  ? "Home Delivery"
+                  : "Farm Pickup"}
+                <br />
+                {order.delivery_method === "delivery"
+                  ? `Address: ${order.address ?? ""}`
+                  : ""}
+              </p>
+            </div>
+            <div>
+              <h4>Payment Information</h4>
+              <p className="muted" style={{ fontSize: 13.5 }}>
+                Method: {order.payment_method}
+                <br />
+                Reference: {order.payment_ref}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="/account/orders"
-            className="inline-flex items-center gap-[9px] rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive"
-          >
+        <div style={{ textAlign: "center" }}>
+          <Link href="/account/orders" className="btn btn-primary">
             Go to My Orders
-          </Link>
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-[9px] rounded-full border-2 border-forest bg-transparent px-7 py-[15px] text-sm font-bold text-forest transition-all hover:-translate-y-0.5 hover:bg-forest hover:text-white"
-          >
+          </Link>{" "}
+          <Link href="/shop" className="btn btn-outline">
             Continue Shopping
           </Link>
         </div>

@@ -11,6 +11,7 @@ const VARIANT_MAP: Record<StatusVariant, string> = {
 const STATUS_VARIANTS: Record<string, StatusVariant> = {
   paid: "success",
   successful: "success",
+  success: "success",
   completed: "success",
   confirmed: "success",
   delivered: "success",

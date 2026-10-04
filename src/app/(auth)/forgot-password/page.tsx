@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { SITE } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -31,7 +30,11 @@ export default function ForgotPasswordPage() {
       setSent(true);
     } catch (err: unknown) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong",
+        err instanceof Error && err.message === "Failed to fetch"
+          ? "Unable to connect to the server. Please try again later."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -39,67 +42,48 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <section className="flex min-h-dvh items-center justify-center bg-cream px-6 py-16">
-      <div className="w-full max-w-[440px] rounded-[18px] border border-line bg-white p-8 shadow-[var(--shadow-default)]">
-        <div className="mb-6 text-center">
-          <Image
-            src={SITE.media.logo}
-            alt="DENISCO"
-            width={60}
-            height={60}
-            className="mx-auto mb-4 size-[60px] rounded-full border border-line object-cover"
-          />
-          <h1 className="text-[28px] font-semibold">Forgot Password</h1>
-          <p className="text-sm text-muted">
+    <section className="section">
+      <div className="container" style={{ maxWidth: 440 }}>
+        <div className="card" style={{ padding: 38 }}>
+          <h2 className="text-center">Forgot Password</h2>
+          <p className="muted text-center text-[13px]">
             Enter your email and we&apos;ll send you a reset link
           </p>
-        </div>
 
-        {error && (
-          <div className="mb-4 rounded-[10px] bg-badge-red-bg px-4 py-3 text-sm font-bold text-badge-red-text">
-            {error}
-          </div>
-        )}
-
-        {sent ? (
-          <div className="rounded-[10px] bg-badge-green-bg px-4 py-5 text-center text-sm font-bold text-badge-green-text">
-            If an account with that email exists, a password reset link has been
-            sent. Check your inbox.
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-5">
-              <label className="mb-2 block text-[13px] font-bold text-forest">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
-                placeholder="you@example.com"
-                required
-              />
+          {error && (
+            <div className="mb-4 rounded-[10px] bg-badge-red-bg px-4 py-3 text-sm font-bold text-badge-red-text">
+              {error}
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {loading ? "Sending…" : "Send Reset Link"}
-            </button>
-          </form>
-        )}
+          )}
 
-        <p className="mt-6 text-center text-sm text-muted">
-          Remember your password?{" "}
-          <Link
-            href="/login"
-            className="font-bold text-olive hover:text-forest"
-          >
-            Login here
-          </Link>
-        </p>
+          {sent ? (
+            <div className="rounded-[10px] bg-badge-green-bg px-4 py-5 text-center text-sm font-bold text-badge-green-text">
+              If an account with that email exists, a password reset link has
+              been sent. Check your inbox.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="fp-email">Email Address</label>
+                <input
+                  type="email"
+                  id="fp-email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" variant="primary" block disabled={loading}>
+                {loading ? "Sending…" : "Send Reset Link"}
+              </Button>
+            </form>
+          )}
+
+          <p className="mt-[18px] text-center text-[13.5px]">
+            Remember your password? <Link href="/login">Login here</Link>
+          </p>
+        </div>
       </div>
     </section>
   );

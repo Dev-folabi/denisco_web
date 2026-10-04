@@ -1,61 +1,96 @@
+"use client";
+
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { MoneyFromKobo } from "@/lib/utils/format";
 
+interface SummaryLine {
+  label: string;
+  value: ReactNode;
+}
+
 interface CartSummaryProps {
+  lines?: SummaryLine[];
   subtotal: number;
   deliveryFee?: number | null;
   total: number;
+  note?: ReactNode;
   ctaLabel?: string;
   ctaHref?: string;
+  ctaIcon?: ReactNode;
   onCtaClick?: () => void;
   disabled?: boolean;
 }
 
 export function CartSummary({
+  lines,
   subtotal,
   deliveryFee,
   total,
+  note,
   ctaLabel = "Proceed to Checkout",
   ctaHref,
+  ctaIcon,
   onCtaClick,
   disabled,
 }: CartSummaryProps) {
-  const btnClass =
-    "mt-6 block w-full rounded-full bg-forest px-7 py-[15px] text-center text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive disabled:cursor-not-allowed disabled:opacity-45";
+  const deliveryValue =
+    deliveryFee == null
+      ? "Calculated at checkout"
+      : deliveryFee === 0
+        ? "Free"
+        : MoneyFromKobo(deliveryFee);
+
+  const ctaContent = (
+    <>
+      {ctaIcon}
+      {ctaLabel}
+    </>
+  );
 
   return (
-    <div className="sticky top-[110px] rounded-[18px] border border-line bg-white p-7 shadow-[var(--shadow-default)] max-sm:static max-sm:p-5">
-      <h3 className="mb-5 text-[17px] font-semibold">Order Summary</h3>
-      <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
+    <div className="card cart-summary">
+      <h3>Order Summary</h3>
+      {lines?.map((line) => (
+        <div className="summary-line" key={line.label}>
+          <span>{line.label}</span>
+          <span>{line.value}</span>
+        </div>
+      ))}
+      <div className="summary-line">
         <span>Subtotal</span>
         <span>{MoneyFromKobo(subtotal)}</span>
       </div>
-      <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
-        <span>Delivery</span>
-        <span>
-          {deliveryFee == null
-            ? "Calculated at checkout"
-            : deliveryFee === 0
-              ? "Free"
-              : MoneyFromKobo(deliveryFee)}
-        </span>
+      <div className="summary-line">
+        <span>Delivery Fee</span>
+        <span>{deliveryValue}</span>
       </div>
-      <div className="mt-2.5 flex justify-between pt-4 text-lg font-extrabold text-forest">
+      <div className="summary-line total">
         <span>Total</span>
         <span>{MoneyFromKobo(total)}</span>
       </div>
+      {note && (
+        <p className="form-hint" style={{ marginTop: 16 }}>
+          {note}
+        </p>
+      )}
       {ctaHref ? (
-        <Link href={ctaHref} className={btnClass}>
-          {ctaLabel}
+        <Link
+          href={ctaHref}
+          className="btn btn-primary btn-block"
+          style={{ marginTop: note ? 12 : 18 }}
+        >
+          {ctaContent}
         </Link>
       ) : (
         <button
           type="button"
+          className="btn btn-primary btn-block"
+          style={{ marginTop: note ? 12 : 18 }}
           onClick={onCtaClick}
           disabled={disabled}
-          className={btnClass}
         >
-          {ctaLabel}
+          {ctaContent}
         </button>
       )}
     </div>

@@ -235,7 +235,7 @@ src/
 **Content:** Intro box (olive left border), 25 policy sections with eyebrow, h2, paragraphs, bullet lists, principle quotes. Policy promise box at end (forest bg).
 
 ### 2.12 Auth Pages
-- [x] **Implement Login Page** — Card (440px), email + password fields, demo hint, register link. `?redirect=checkout` support.
+- [x] **Implement Login Page** — Card (440px), email + password fields, "Forgot password?" link → `/forgot-password`, demo hint, register link. `?redirect=checkout` support.
 - [x] **Implement Register Page** — Card (480px), name + email + phone + password + confirm password, login link.
 - [x] **Implement Forgot Password Page** — Card (440px), email field, success state.
 - [x] **Implement Reset Password Page** — Card (440px), new password + confirm, token from URL.
@@ -297,14 +297,14 @@ src/
 ## 4. API Integration
 
 ### API Client (`lib/api/client.ts`)
-- [ ] Base URL from `NEXT_PUBLIC_API_URL`
-- [ ] Attach `Authorization: Bearer {accessToken}` for authenticated requests
-- [ ] Single-flight refresh: if 401, refresh token via cookie, retry original request
-- [ ] Parse response: extract `data` from `{success, message, data}` envelope
-- [ ] Throw typed errors for `{success: false, error: {code, message}}`
+- [x] Base URL from `NEXT_PUBLIC_API_URL`
+- [x] Attach `Authorization: Bearer {accessToken}` for authenticated requests
+- [x] Single-flight refresh: if 401, refresh token via cookie, retry original request
+- [x] Parse response: extract `data` from `{success, message, data}` envelope
+- [x] Throw typed errors for `{success: false, error: {code, message}}`
 
 ### Feature API Pattern
-- [ ] Set up feature API pattern per module (`features/*/api.ts`)
+- [ ] Set up feature API pattern per module (`features/*/api.ts`) — dirs exist but are empty (no backend yet)
 ```typescript
 export async function getProducts(params?: ProductListParams): Promise<PaginatedResponse<Product>> {
   return apiClient.get('/api/v1/products', { params });
@@ -312,7 +312,7 @@ export async function getProducts(params?: ProductListParams): Promise<Paginated
 ```
 
 ### TanStack Query Hooks
-- [ ] Set up TanStack Query hooks per module (`features/*/hooks.ts`)
+- [ ] Set up TanStack Query hooks per module (`features/*/hooks.ts`) — provider installed, no queries wired yet
 ```typescript
 export function useProducts(params?: ProductListParams) {
   return useQuery({ queryKey: ['products', params], queryFn: () => getProducts(params) });
@@ -320,7 +320,7 @@ export function useProducts(params?: ProductListParams) {
 ```
 
 ### Server-Side Fetching
-- [ ] For SSR/ISR pages (home, shop, product detail): fetch directly with `fetch()` + `next: { revalidate: 60 }`
+- [ ] For SSR/ISR pages (home, shop, product detail): fetch directly with `fetch()` + `next: { revalidate: 60 }` — pages render server-side but with empty demo data (no backend yet)
 
 ---
 
@@ -328,27 +328,27 @@ export function useProducts(params?: ProductListParams) {
 
 | Page | Strategy | Status | Reason |
 |---|---|---|---|
-| Home | SSR/ISR (60s) | [ ] | SEO, featured products |
-| About | Static | [ ] | No dynamic data |
-| Services | Static | [ ] | No dynamic data |
-| Policy | Static | [ ] | No dynamic data |
-| Shop | SSR/ISR (60s) | [ ] | SEO, product data |
-| Product Detail | SSR/ISR (60s) | [ ] | SEO, product data |
-| Contact | Static | [ ] | No dynamic data |
-| Cart | CSR | [ ] | User-specific, interactive |
-| Checkout | CSR | [ ] | Auth-required, interactive |
-| Payment Callback | CSR | [ ] | Real-time payment status |
-| Consultation | CSR | [ ] | Interactive booking flow |
-| Account pages | CSR | [ ] | Auth-required, user-specific |
-| Login/Register | CSR | [ ] | Interactive forms |
+| Home | SSR/ISR (60s) | [x] | SEO, product data |
+| About | Static | [x] | No dynamic data |
+| Services | Static | [x] | No dynamic data |
+| Policy | Static | [x] | No dynamic data |
+| Shop | SSR/ISR (60s) | [x] | SEO, product data |
+| Product Detail | SSR/ISR (60s) | [x] | SEO, product data |
+| Contact | Static | [x] | No dynamic data |
+| Cart | CSR | [x] | User-specific, interactive |
+| Checkout | CSR | [x] | Auth-required, interactive |
+| Payment Callback | CSR | [x] | Real-time payment status |
+| Consultation | CSR | [x] | Interactive booking flow |
+| Account pages | CSR | [x] | Auth-required, user-specific |
+| Login/Register | CSR | [x] | Interactive forms |
 
 ---
 
 ## 6. SEO & Metadata
 
-- [ ] Every page: `<title>`, `<meta name="description">`, Open Graph tags
-- [ ] Home: "DENISCO GLOBAL AGRICULTURE LTD | Farm to Fork Agriculture & Agro-Services"
-- [ ] Product pages: dynamic title and description from product data
+- [ ] Every page: `<title>`, `<meta name="description">`, Open Graph tags — title/description done (root layout + about/services/contact/policy); Open Graph + remaining pages pending
+- [x] Home: "DENISCO GLOBAL AGRICULTURE LTD | Farm to Fork Agriculture & Agro-Services"
+- [ ] Product pages: dynamic title and description from product data (no product data yet)
 - [ ] Sitemap generation
 - [ ] robots.txt
 

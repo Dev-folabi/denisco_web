@@ -15,17 +15,13 @@ export function CategoryFilter({
   onChange,
 }: CategoryFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2.5">
+    <div className="shop-filters">
       {categories.map((cat) => (
         <button
           key={cat.slug}
           type="button"
           onClick={() => onChange(cat.slug)}
-          className={`rounded-full border-[1.5px] px-5 py-2.5 text-[13px] font-bold transition-colors ${
-            active === cat.slug
-              ? "border-forest bg-forest text-white"
-              : "border-line bg-white text-ink hover:border-forest"
-          }`}
+          className={`filter-chip${active === cat.slug ? " active" : ""}`}
         >
           {cat.label}
         </button>

@@ -17,11 +17,11 @@ export function SectionHead({
         align === "center" ? "mx-auto text-center" : "text-left"
       }`}
     >
-      {eyebrow && <span className="eyebrow mb-4">{eyebrow}</span>}
-      <h2 className="text-[38px] font-semibold max-sm:text-[31px] max-[390px]:text-[28px]">
+      {eyebrow && <span className="eyebrow">{eyebrow}</span>}
+      <h2 className="text-[38px] font-semibold [@media(max-width:640px)]:text-[31px] [@media(max-width:390px)]:text-[28px]!">
         {title}
       </h2>
-      {description && <p className="mt-2 text-muted">{description}</p>}
+      {description && <p className="text-muted">{description}</p>}
     </div>
   );
 }

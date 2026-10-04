@@ -6,7 +6,7 @@ import {
   useContext,
   useState,
 } from "react";
-import { CheckCircle, XCircle, Info, X } from "lucide-react";
+import { CheckCircle, XCircle, Info } from "lucide-react";
 
 type ToastType = "success" | "error" | "info";
 
@@ -24,9 +24,9 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 let nextId = 0;
 
 const ICONS: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle size={18} className="text-olive" />,
-  error: <XCircle size={18} className="text-danger" />,
-  info: <Info size={18} className="text-info" />,
+  success: <CheckCircle size={14} className="text-olive" />,
+  error: <XCircle size={14} className="text-danger" />,
+  info: <Info size={14} className="text-info" />,
 };
 
 const BORDER: Record<ToastType, string> = {
@@ -43,31 +43,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => [...prev, { id, type, message }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  }, []);
-
-  const dismiss = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3500);
   }, []);
 
   return (
     <ToastContext.Provider value={{ toast: addToast }}>
       {children}
-      <div className="fixed bottom-6 right-6 z-[999] flex flex-col gap-2.5 max-sm:bottom-3 max-sm:right-3 max-sm:left-3">
+      <div className="toast-container">
         {toasts.map((t) => (
-          <div
-            key={t.id}
-            className={`flex items-center gap-3 rounded-[14px] border border-line border-l-4 bg-white px-5 py-4 shadow-[var(--shadow-default)] ${BORDER[t.type]}`}
-          >
+          <div key={t.id} className={`toast ${BORDER[t.type]}`}>
             {ICONS[t.type]}
-            <span className="flex-1 text-sm">{t.message}</span>
-            <button
-              type="button"
-              onClick={() => dismiss(t.id)}
-              className="text-muted hover:text-forest"
-            >
-              <X size={14} />
-            </button>
+            <span>{t.message}</span>
           </div>
         ))}
       </div>

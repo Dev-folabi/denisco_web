@@ -50,13 +50,14 @@ export const SITE = {
     },
     heroImage: "/images/hero-crop-field.jpg",
     farmland: "/images/rice-paddy.jpg",
+    workers: "/images/local-chickens.png",
     productFallback: "/images/hero-crop-field.jpg",
   },
   socials: [
-    { label: "Facebook", url: "#", icon: "f" },
-    { label: "Instagram", url: "#", icon: "📷" },
-    { label: "X (Twitter)", url: "#", icon: "𝕏" },
-    { label: "WhatsApp", url: "#", icon: "💬" },
+    { label: "Facebook", url: "#", icon: "facebook" },
+    { label: "Instagram", url: "#", icon: "instagram" },
+    { label: "X (Twitter)", url: "#", icon: "twitter" },
+    { label: "WhatsApp", url: "#", icon: "whatsapp" },
   ],
   about: {
     vision:

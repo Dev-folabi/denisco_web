@@ -20,27 +20,21 @@ export function ConfirmDialog({
   title,
   message,
   confirmLabel = "Yes, Continue",
-  danger,
+  danger = true,
   loading,
 }: ConfirmDialogProps) {
   return (
     <Modal open={open} onClose={onClose} title={title}>
-      <p className="mb-6 text-sm text-muted">{message}</p>
-      <div className="flex justify-end gap-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-full border-2 border-forest bg-transparent px-6 py-[11px] text-sm font-bold text-forest transition-all hover:bg-forest hover:text-white"
-        >
+      <p className="muted">{message}</p>
+      <div className="mt-[22px] flex justify-end gap-[10px]">
+        <button type="button" onClick={onClose} className="btn btn-outline">
           Cancel
         </button>
         <button
           type="button"
           onClick={onConfirm}
           disabled={loading}
-          className={`rounded-full px-6 py-[11px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-45 ${
-            danger ? "bg-danger hover:bg-danger/80" : "bg-forest hover:bg-olive"
-          }`}
+          className={`btn ${danger ? "btn-danger" : "btn-primary"}`}
         >
           {loading ? "Processing…" : confirmLabel}
         </button>

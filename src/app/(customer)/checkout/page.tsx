@@ -2,147 +2,187 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Truck, MapPin } from "lucide-react";
-import { Money } from "@/lib/utils/format";
+import { Info, Lock, ShoppingBasket } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-provider";
+import { CartSummary } from "@/components/cart/cart-summary";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MoneyFromKobo } from "@/lib/utils/format";
 import { SITE } from "@/lib/constants";
 
+interface CheckoutItem {
+  id: string;
+  name: string;
+  unit: string;
+  unit_price: number;
+  quantity: number;
+}
+
 export default function CheckoutPage() {
+  const { isAuthenticated, user } = useAuth();
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">(
     "delivery",
   );
-  const deliveryFee = deliveryMethod === "delivery" ? SITE.deliveryFee : 0;
+
+  const cartItems: CheckoutItem[] = [];
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.unit_price * item.quantity,
+    0,
+  );
+  const deliveryFee =
+    deliveryMethod === "delivery" ? SITE.deliveryFee * 100 : 0;
+  const total = subtotal + deliveryFee;
+
+  if (!isAuthenticated) {
+    return (
+      <section className="section">
+        <div
+          className="container"
+          style={{ maxWidth: "500px", textAlign: "center" }}
+        >
+          <div className="empty-state">
+            <Lock size={48} className="empty-icon" />
+            <h3>Please Log In to Checkout</h3>
+            <p>
+              You need a customer account to complete checkout and track your
+              order.
+            </p>
+            <Link href="/login?redirect=checkout" className="btn btn-primary">
+              Login
+            </Link>{" "}
+            <Link href="/register" className="btn btn-outline">
+              Create Account
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <section className="section">
+        <div className="container">
+          <EmptyState
+            icon={ShoppingBasket}
+            title="Your cart is empty"
+            description="Add products to your cart before proceeding to checkout."
+            ctaLabel="Go to Shop"
+            ctaHref="/shop"
+          />
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="px-6 py-12">
+    <section className="section">
       <div className="container">
-        <h1 className="mb-8 text-[38px] font-semibold">Checkout</h1>
-        <div className="grid grid-cols-[1.2fr_1fr] items-start gap-10 max-[1024px]:grid-cols-1">
-          {/* Form */}
-          <div>
-            {/* Contact */}
-            <fieldset className="mb-5 rounded-[18px] border-[1.5px] border-line bg-white p-[22px]">
-              <legend className="px-2.5 text-[13px] font-extrabold uppercase tracking-[.6px] text-forest">
-                01 · Contact Details
-              </legend>
-              <div className="grid grid-cols-2 gap-5 max-sm:grid-cols-1">
-                <div>
-                  <label className="mb-2 block text-[13px] font-bold text-forest">
-                    Full Name
-                  </label>
+        <h1>Checkout</h1>
+        <div className="cart-layout">
+          <form noValidate>
+            <fieldset>
+              <legend>01 · Contact Details</legend>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="co-name">Full Name</label>
                   <input
-                    type="text"
-                    className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
+                    className="form-control"
+                    id="co-name"
+                    required
+                    defaultValue={
+                      user
+                        ? `${user.first_name} ${user.last_name}`.trim()
+                        : ""
+                    }
                   />
                 </div>
-                <div>
-                  <label className="mb-2 block text-[13px] font-bold text-forest">
-                    Email
-                  </label>
+                <div className="form-group">
+                  <label htmlFor="co-email">Email Address</label>
                   <input
                     type="email"
-                    className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
-                  />
-                </div>
-                <div className="col-span-full">
-                  <label className="mb-2 block text-[13px] font-bold text-forest">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    className="w-full rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
+                    className="form-control"
+                    id="co-email"
+                    required
+                    defaultValue={user?.email ?? ""}
                   />
                 </div>
               </div>
+              <div className="form-group">
+                <label htmlFor="co-phone">Phone Number</label>
+                <input
+                  className="form-control"
+                  id="co-phone"
+                  required
+                  defaultValue={user?.phone ?? ""}
+                />
+              </div>
             </fieldset>
 
-            {/* Delivery */}
-            <fieldset className="mb-5 rounded-[18px] border-[1.5px] border-line bg-white p-[22px]">
-              <legend className="px-2.5 text-[13px] font-extrabold uppercase tracking-[.6px] text-forest">
-                02 · Delivery Method
-              </legend>
+            <fieldset>
+              <legend>02 · Delivery Method</legend>
               <label
-                className={`mb-2.5 flex cursor-pointer items-center gap-3 rounded-[10px] border-[1.5px] px-4 py-3.5 ${
-                  deliveryMethod === "delivery"
-                    ? "border-olive bg-cream-deep"
-                    : "border-line"
+                className={`radio-card ${
+                  deliveryMethod === "delivery" ? "selected" : ""
                 }`}
               >
                 <input
                   type="radio"
-                  name="delivery"
+                  name="delivery-method"
+                  value="delivery"
                   checked={deliveryMethod === "delivery"}
                   onChange={() => setDeliveryMethod("delivery")}
-                  className="accent-olive"
-                />
-                <Truck size={18} className="text-forest" />
-                <div className="flex-1">
-                  <strong className="text-sm font-bold">Home Delivery</strong>
-                  <span className="ml-2 text-xs text-muted">
-                    {Money(SITE.deliveryFee)}
-                  </span>
-                </div>
+                />{" "}
+                Home Delivery (₦2,500 flat fee within Abuja, demo rate)
               </label>
               <label
-                className={`flex cursor-pointer items-center gap-3 rounded-[10px] border-[1.5px] px-4 py-3.5 ${
-                  deliveryMethod === "pickup"
-                    ? "border-olive bg-cream-deep"
-                    : "border-line"
+                className={`radio-card ${
+                  deliveryMethod === "pickup" ? "selected" : ""
                 }`}
               >
                 <input
                   type="radio"
-                  name="delivery"
+                  name="delivery-method"
+                  value="pickup"
                   checked={deliveryMethod === "pickup"}
                   onChange={() => setDeliveryMethod("pickup")}
-                  className="accent-olive"
-                />
-                <MapPin size={18} className="text-forest" />
-                <div className="flex-1">
-                  <strong className="text-sm font-bold">Farm Pickup</strong>
-                  <span className="ml-2 text-xs text-muted">Free</span>
-                </div>
+                />{" "}
+                Farm Pickup (Free)
               </label>
-
-              {deliveryMethod === "delivery" && (
-                <div className="mt-4">
-                  <label className="mb-2 block text-[13px] font-bold text-forest">
-                    Delivery Address
-                  </label>
-                  <textarea
-                    rows={3}
-                    className="w-full resize-y rounded-[10px] border-[1.5px] border-line bg-white px-4 py-[13px] text-sm outline-none focus:border-olive"
-                    placeholder="Enter your delivery address…"
-                  />
-                </div>
-              )}
+              <div
+                className="form-group"
+                id="address-group"
+                style={{
+                  display: deliveryMethod === "pickup" ? "none" : "block",
+                }}
+              >
+                <label htmlFor="co-address">Delivery Address</label>
+                <textarea
+                  className="form-control"
+                  id="co-address"
+                  rows={2}
+                  placeholder="Enter your delivery address"
+                />
+              </div>
             </fieldset>
-          </div>
+          </form>
 
-          {/* Order summary */}
-          <div className="sticky top-[110px] rounded-[18px] border border-line bg-white p-7 shadow-[var(--shadow-default)] max-[1024px]:static">
-            <h3 className="mb-5 text-lg font-semibold">Order Summary</h3>
-            <p className="mb-4 text-sm text-muted">
-              Cart items will appear here when the cart is connected.
-            </p>
-            <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
-              <span>Subtotal</span>
-              <span>₦0</span>
-            </div>
-            <div className="flex justify-between border-b border-dotted border-line py-[9px] text-[14.5px]">
-              <span>Delivery Fee</span>
-              <span>{deliveryFee > 0 ? Money(deliveryFee) : "Free"}</span>
-            </div>
-            <div className="mt-2.5 flex justify-between pt-4 text-lg font-extrabold text-forest">
-              <span>Total</span>
-              <span>{Money(deliveryFee)}</span>
-            </div>
-            <button
-              type="submit"
-              className="mt-6 w-full rounded-full bg-forest px-7 py-[15px] text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-olive"
-            >
-              Place Order
-            </button>
-          </div>
+          <CartSummary
+            lines={cartItems.map((item) => ({
+              label: `${item.name} × ${item.quantity}`,
+              value: MoneyFromKobo(item.unit_price * item.quantity),
+            }))}
+            subtotal={subtotal}
+            deliveryFee={deliveryFee}
+            total={total}
+            note={
+              <>
+                <Info size={12} /> Payment is simulated automatically when you
+                place your order.
+              </>
+            }
+            ctaLabel="Place Order"
+            ctaIcon={<Lock size={14} />}
+          />
         </div>
       </div>
     </section>

@@ -32,23 +32,22 @@ export function Modal({ open, onClose, title, wide, children }: ModalProps) {
   return (
     <dialog
       ref={dialogRef}
-      className="m-auto max-h-[85dvh] w-[92vw] max-w-[520px] overflow-y-auto rounded-[18px] border border-line bg-white p-0 shadow-[var(--shadow-lg)] backdrop:bg-black/50 backdrop:backdrop-blur-[4px] open:flex open:flex-col"
-      style={wide ? { maxWidth: 720 } : undefined}
+      className={`m-auto max-h-[90vh] w-full overflow-y-auto bg-white p-[30px] shadow-[var(--shadow-lg)] open:flex open:flex-col [@media(max-width:640px)]:max-h-[94dvh] [@media(max-width:640px)]:mt-auto [@media(max-width:640px)]:mb-0 [@media(max-width:640px)]:rounded-t-[20px] [@media(max-width:640px)]:rounded-b-[14px] [@media(max-width:640px)]:p-[25px_18px_20px] ${
+        wide ? "max-w-[820px] rounded-[24px]" : "max-w-[560px] rounded-[24px]"
+      }`}
+      role="dialog"
+      aria-modal="true"
     >
-      {title && (
-        <div className="flex items-center justify-between border-b border-line px-7 py-5">
-          <h2 className="m-0 text-lg font-semibold">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid size-9 place-items-center rounded-[10px] text-muted transition-colors hover:bg-cream-deep hover:text-forest"
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
-        </div>
-      )}
-      <div className="flex-1 overflow-y-auto p-7">{children}</div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-[18px] right-[18px] grid size-9 place-items-center rounded-full border-none bg-cream-deep text-forest [@media(max-width:640px)]:top-3 [@media(max-width:640px)]:right-3"
+        aria-label="Close"
+      >
+        <X size={18} />
+      </button>
+      {title && <h3 className="mb-[22px] pr-10">{title}</h3>}
+      <div className="min-w-0">{children}</div>
     </dialog>
   );
 }

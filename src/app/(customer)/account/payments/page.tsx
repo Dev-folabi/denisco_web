@@ -1,49 +1,55 @@
 "use client";
 
+import { Receipt } from "lucide-react";
+import { StatusPill } from "@/components/account/status-pill";
+import type { Transaction } from "@/components/account/types";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MoneyFromKobo, fmtDate } from "@/lib/utils/format";
+
+const transactions: Transaction[] = [];
+
 export default function TransactionsPage() {
   return (
     <>
-      <h1 className="mb-6 text-[34px] font-semibold max-[760px]:text-[clamp(25px,8vw,34px)]">
-        Transaction History
-      </h1>
+      <h1>Transaction History</h1>
 
-      <div className="rounded-[18px] border border-line bg-white p-[26px] shadow-[var(--shadow-default)] max-sm:p-4">
-        <div className="overflow-x-auto rounded-[18px] border border-line">
-          <table className="w-full min-w-[640px] border-collapse">
-            <thead>
-              <tr>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Reference
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Order No.
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Amount
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Method
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Status
-                </th>
-                <th className="bg-cream-deep px-[18px] py-3.5 text-left text-[11.5px] font-extrabold uppercase tracking-[.5px] text-forest">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td
-                  colSpan={6}
-                  className="px-[18px] py-10 text-center text-sm text-muted"
-                >
-                  No transactions yet. Your payment history will appear here.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div className="panel">
+        {transactions.length ? (
+          <div className="table-wrap">
+            <table className="account-table">
+              <thead>
+                <tr>
+                  <th>Reference</th>
+                  <th>Order No.</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((tx) => (
+                  <tr key={tx.id}>
+                    <td data-label="Reference">{tx.ref}</td>
+                    <td data-label="Order">{tx.order_number}</td>
+                    <td data-label="Amount">{MoneyFromKobo(tx.amount)}</td>
+                    <td data-label="Method">{tx.method}</td>
+                    <td data-label="Status">
+                      <StatusPill status={tx.status} />
+                    </td>
+                    <td data-label="Date">{fmtDate(tx.date)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState
+            icon={Receipt}
+            title="No Transactions Yet"
+            description="Your payment history will appear here after your first order."
+          />
+        )}
       </div>
     </>
   );
