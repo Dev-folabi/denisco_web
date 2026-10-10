@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ShoppingBasket, User, Menu, X, Search } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-provider";
+import { useCart } from "@/features/cart/hooks";
 import { SITE } from "@/lib/constants";
 
 const NAV_LINKS = [
@@ -20,6 +21,8 @@ const NAV_LINKS = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { isAuthenticated, user } = useAuth();
+  const { data: cart } = useCart();
+  const cartCount = cart?.item_count ?? 0;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const isActive = (href: string) =>
@@ -31,7 +34,9 @@ export function SiteHeader() {
         <Link
           href="/"
           className="flex shrink-0 items-center gap-3"
-          aria-label="DENISCO GLOBAL AGRICULTURE LTD home"
+          // The accessible name has to contain the visible text, or a voice
+          // control user asking for "Denisco Global" cannot reach it.
+          aria-label="Denisco Global Agriculture Ltd home"
         >
           <Image
             src={SITE.media.logo}
@@ -125,11 +130,11 @@ export function SiteHeader() {
           <Link
             href="/cart"
             className="relative grid size-[42px] place-items-center rounded-full border-[1.5px] border-line bg-white text-forest transition-all duration-[250ms] [@media(max-width:640px)]:size-10 [@media(max-width:390px)]:size-[38px]!"
-            aria-label="View cart"
+            aria-label={`View cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
           >
             <ShoppingBasket size={15.5} />
             <span className="absolute -right-[5px] -top-[5px] flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-clay px-1 text-[10px] font-extrabold text-white [@media(max-width:390px)]:-right-[3px] [@media(max-width:390px)]:-top-[4px]">
-              0
+              {cartCount}
             </span>
           </Link>
 

@@ -1,153 +1,72 @@
-"use client";
-
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { ShoppingCart, TriangleAlert } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
-import { SectionHead } from "@/components/layout/section-head";
-import { QtyStepper } from "@/components/product/qty-stepper";
-import { StockBadge } from "@/components/product/stock-badge";
-import { ProductCard, type Product } from "@/components/product/product-card";
-import { categoryLabel } from "@/components/product/category-label";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import {
+  fetchProductBySlug,
+  fetchRelatedProducts,
+} from "@/lib/api/server";
+import { pageMetadata } from "@/lib/seo";
 import { MoneyFromKobo } from "@/lib/utils/format";
+import { ProductDetail } from "./product-detail";
 
-export default function ProductDetailPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const [qty, setQty] = useState(1);
+// Regenerated every minute, so a price or description change reaches search
+// results and shared links without a deploy.
+// Next reads this at build time, so it has to be a literal: it is the same
+// sixty seconds as CATALOGUE_REVALIDATE_SECONDS in lib/api/server.ts.
+export const revalidate = 60;
 
-  const products: Product[] = [];
-  const product = products.find((p) => p.slug === slug) ?? null;
-  const related = product
-    ? products
-        .filter((p) => p.category === product.category && p.id !== product.id)
-        .slice(0, 4)
-    : [];
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
 
+/**
+ * Title, description and share card are built from the product itself, which
+ * is the point of rendering this page on the server: a link to a product has
+ * to show that product, not the site's default blurb.
+ */
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await fetchProductBySlug(slug);
+
+  // notFound() here rather than in the page body on purpose: metadata is
+  // resolved before the response starts streaming, and a status code cannot
+  // change once it has. Raising it in the page would still render the
+  // not-found UI, but as a soft 404 — a 200 that tells a crawler the removed
+  // product is still a page.
   if (!product) {
-    return (
-      <section className="section">
-        <div className="container">
-          <EmptyState
-            icon={TriangleAlert}
-            title="Product Not Found"
-            description="This product may have been removed."
-            ctaLabel="Back to Shop"
-            ctaHref="/shop"
-          />
-        </div>
-      </section>
-    );
+    notFound();
   }
 
+  const description = `${product.name} — ${MoneyFromKobo(product.price)} per ${
+    product.unit
+  }. ${product.description}`.slice(0, 300);
+
+  return pageMetadata({
+    title: product.name,
+    description,
+    path: `/shop/${product.slug}`,
+    image: product.images[0],
+  });
+}
+
+export default async function ProductDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+
+  const product = await fetchProductBySlug(slug);
+  if (!product) {
+    // A slug that is not in the catalogue is a 404, not an empty product page:
+    // the status code is what stops a removed product lingering in an index.
+    notFound();
+  }
+
+  const related = await fetchRelatedProducts(slug);
+
   return (
-    <>
-      <section className="section section-white" style={{ paddingTop: 44 }}>
-        <div className="container">
-          <div className="breadcrumb" style={{ color: "var(--color-muted)" }}>
-            <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> /{" "}
-            {product.name}
-          </div>
-
-          <div className="pd-grid">
-            <div className="pd-img">
-              {product.images[0] && (
-                <Image
-                  src={product.images[0]}
-                  alt={product.name}
-                  width={600}
-                  height={450}
-                />
-              )}
-            </div>
-            <div>
-              <span
-                className="cat-badge"
-                style={{
-                  position: "static",
-                  display: "inline-block",
-                  marginBottom: 14,
-                  background: "var(--color-cream-deep)",
-                }}
-              >
-                {categoryLabel(product.category)}
-              </span>
-              <h1>{product.name}</h1>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  gap: 8,
-                  marginBottom: 16,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontSize: 28,
-                    color: "var(--color-forest)",
-                    fontWeight: 700,
-                  }}
-                >
-                  {MoneyFromKobo(product.price)}
-                </span>
-                <span className="muted">/ {product.unit}</span>
-              </div>
-              <p className="muted">{product.description}</p>
-              <p>
-                <StockBadge stock={product.stock} inline />
-                <span className="muted" style={{ marginLeft: 8 }}>
-                  {product.stock > 0
-                    ? `${product.stock} ${product.unit}(s) available`
-                    : "Currently unavailable"}
-                </span>
-              </p>
-
-              <div className="form-group">
-                <label>Quantity</label>
-                <QtyStepper
-                  value={qty}
-                  max={Math.max(product.stock, 1)}
-                  onChange={setQty}
-                />
-              </div>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={product.stock <= 0}
-                style={{ padding: "15px 32px" }}
-              >
-                <ShoppingCart size={16} /> Add to Cart
-              </button>
-              <Link
-                href="/cart"
-                className="btn btn-outline"
-                style={{ marginLeft: 10, padding: "15px 28px" }}
-              >
-                View Cart
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {related.length > 0 && (
-        <section className="section section-deep">
-          <div className="container">
-            <SectionHead
-              eyebrow="You May Also Like"
-              title="Related Products"
-            />
-            <div className="grid grid-4">
-              {related.map((item) => (
-                <ProductCard key={item.id} product={item} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-    </>
+    <ProductDetail
+      slug={slug}
+      initialProduct={product}
+      initialRelated={related}
+    />
   );
 }

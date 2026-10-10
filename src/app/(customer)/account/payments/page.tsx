@@ -1,26 +1,35 @@
 "use client";
 
-import { Receipt } from "lucide-react";
+import { Loader2, Receipt } from "lucide-react";
 import { StatusPill } from "@/components/account/status-pill";
-import type { Transaction } from "@/components/account/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MoneyFromKobo, fmtDate } from "@/lib/utils/format";
-
-const transactions: Transaction[] = [];
+import { usePayments } from "@/features/payments/hooks";
 
 export default function TransactionsPage() {
+  const { data, isPending } = usePayments(1, 50);
+  const transactions = data?.data ?? [];
+
   return (
     <>
       <h1>Transaction History</h1>
 
       <div className="panel">
-        {transactions.length ? (
+        {isPending ? (
+          <div className="flex min-h-[200px] items-center justify-center">
+            <Loader2
+              size={26}
+              className="animate-spin text-olive"
+              aria-label="Loading your transactions"
+            />
+          </div>
+        ) : transactions.length ? (
           <div className="table-wrap">
             <table className="account-table">
               <thead>
                 <tr>
                   <th>Reference</th>
-                  <th>Order No.</th>
+                  <th>For</th>
                   <th>Amount</th>
                   <th>Method</th>
                   <th>Status</th>
@@ -30,14 +39,20 @@ export default function TransactionsPage() {
               <tbody>
                 {transactions.map((tx) => (
                   <tr key={tx.id}>
-                    <td data-label="Reference">{tx.ref}</td>
-                    <td data-label="Order">{tx.order_number}</td>
+                    <td data-label="Reference">{tx.reference}</td>
+                    {/* A transaction pays for an order or a consultation, so
+                        this column names whichever it was. */}
+                    <td data-label="For">
+                      {tx.purpose === "consultation"
+                        ? `Consultation ${tx.booking_reference ?? ""}`.trim()
+                        : (tx.order_number ?? "—")}
+                    </td>
                     <td data-label="Amount">{MoneyFromKobo(tx.amount)}</td>
-                    <td data-label="Method">{tx.method}</td>
+                    <td data-label="Method">{tx.method ?? "Paystack"}</td>
                     <td data-label="Status">
                       <StatusPill status={tx.status} />
                     </td>
-                    <td data-label="Date">{fmtDate(tx.date)}</td>
+                    <td data-label="Date">{fmtDate(tx.created_at)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -47,7 +62,7 @@ export default function TransactionsPage() {
           <EmptyState
             icon={Receipt}
             title="No Transactions Yet"
-            description="Your payment history will appear here after your first order."
+            description="Your payment history will appear here after your first order or consultation."
           />
         )}
       </div>

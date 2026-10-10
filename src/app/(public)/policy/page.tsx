@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
 import { SITE } from "@/lib/constants";
 import { COMPANY_POLICY } from "@/lib/constants/policy";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Company Policy",
   description:
-    "DENISCO Global Agriculture's comprehensive company policy covering farming, animal welfare, food safety, and environmental responsibility.",
-};
+"DENISCO Global Agriculture's comprehensive company policy covering farming, animal welfare, food safety, and environmental responsibility.",
+  path: "/policy",
+});
 
 export default function PolicyPage() {
   return (

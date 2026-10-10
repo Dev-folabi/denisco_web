@@ -21,7 +21,12 @@ export function DateScroller({ dates, selected, onSelect }: DateScrollerProps) {
             key={date}
             type="button"
             onClick={() => onSelect(date)}
-            aria-label={`Select ${fmtDate(date)}`}
+            // The visible label reads "Mon 06 Oct", so the accessible name
+            // has to carry the weekday too: a name that drops part of the
+            // visible text cannot be used by voice control.
+            aria-label={`Select ${value.toLocaleDateString("en-NG", {
+              weekday: "short",
+            })} ${fmtDate(date)}`}
             className={`booking-date-btn${isSelected ? " selected" : ""}`}
           >
             <span>

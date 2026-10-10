@@ -1,9 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHead } from "@/components/layout/section-head";
+import {
+  FEATURED_LIMIT,
+  FeaturedProducts,
+} from "@/components/product/featured-products";
 import { ServiceIcon } from "@/components/services/service-icon";
 import { SITE } from "@/lib/constants";
+import { fetchProducts } from "@/lib/api/server";
 import { Sprout, Leaf, Users, Check } from "lucide-react";
+
+// The featured products are read on the server and the page is regenerated
+// every minute, so the grid is in the HTML rather than appearing after a
+// client fetch.
+// Next reads this at build time, so it has to be a literal: it is the same
+// sixty seconds as CATALOGUE_REVALIDATE_SECONDS in lib/api/server.ts.
+export const revalidate = 60;
 
 const WHO_WE_ARE_POINTS = [
   "Quality production from soil to marketplace",
@@ -11,7 +23,12 @@ const WHO_WE_ARE_POINTS = [
   "Knowledge that supports farmers and communities",
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featured = await fetchProducts({
+    featured: true,
+    limit: FEATURED_LIMIT,
+  });
+
   const services = SITE.services.slice(0, 4);
   const videos = [
     SITE.media.videos.farmIntroduction,
@@ -64,6 +81,10 @@ export default function HomePage() {
                 alt="Integrated farm operations at Denisco Global Agriculture Limited"
                 width={600}
                 height={480}
+                // The frame is at most 600px wide and full-width on a phone;
+                // without this the browser downloads a source sized for the
+                // viewport rather than for the frame.
+                sizes="(max-width: 760px) 100vw, 600px"
                 priority
               />
             </div>
@@ -87,7 +108,8 @@ export default function HomePage() {
               alt="Denisco agricultural land"
               width={600}
               height={400}
-            />
+            sizes="(max-width: 760px) 100vw, 600px"
+              />
           </div>
           <div>
             <span className="eyebrow">Who We Are</span>
@@ -123,18 +145,8 @@ export default function HomePage() {
             title="Fresh From Our Farms"
             description="A selection of available livestock, poultry and crop products."
           />
-          <div className="grid grid-4 gap-7">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex flex-col">
-                <div className="h-[210px] rounded-[18px] bg-white/60 shadow-[var(--shadow-default)]" />
-                <div className="px-1 pt-[22px]">
-                  <div className="mb-1.5 h-5 w-3/4 rounded bg-white/60" />
-                  <div className="mb-3.5 h-3 w-full rounded bg-white/60" />
-                  <div className="h-4 w-1/2 rounded bg-white/60" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <FeaturedProducts initialProducts={featured?.data} />
+
           <div className="mt-[44px] text-center">
             <Link href="/shop" className="btn btn-outline">
               View All Products
@@ -164,7 +176,15 @@ export default function HomePage() {
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
                 </div>
-                <Link href="/services" className="btn btn-ghost btn-sm">
+                {/* The visible label stays "Learn More", as the prototype
+                    has it; the accessible name names the service, so four
+                    identical links are distinguishable to a screen reader and
+                    to a crawler. */}
+                <Link
+                  href="/services"
+                  aria-label={`Learn more about ${service.title}`}
+                  className="btn btn-ghost btn-sm"
+                >
                   Learn More
                 </Link>
               </div>
@@ -188,7 +208,8 @@ export default function HomePage() {
                 alt="Chief Executive Officer of Denisco Global Agriculture Limited"
                 width={500}
                 height={500}
-              />
+              sizes="(max-width: 760px) 100vw, 500px"
+                />
             </div>
           </div>
           <div>
@@ -221,7 +242,11 @@ export default function HomePage() {
                 <div className="video-frame">
                   <video
                     controls
-                    preload="metadata"
+                    // The poster carries the frame, so nothing is fetched from
+                    // the video until a visitor presses play: two farm videos
+                    // at metadata preload cost two requests on every home-page
+                    // view for no visible benefit.
+                    preload="none"
                     poster={video.poster}
                     aria-label={video.title}
                   >

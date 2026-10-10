@@ -6,6 +6,21 @@ import { useAuth } from "@/lib/auth/auth-provider";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Resolves the post-login destination.
+ *
+ * Only same-site paths are honoured, so a crafted `?redirect=` cannot bounce
+ * a freshly signed-in customer to another domain.
+ */
+function safeRedirect(redirect?: string) {
+  if (!redirect) return "/account";
+
+  const path = redirect.startsWith("/") ? redirect : `/${redirect}`;
+  if (path.startsWith("//")) return "/account";
+
+  return path;
+}
+
 export function LoginForm({ redirect }: { redirect?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +28,7 @@ export function LoginForm({ redirect }: { redirect?: string }) {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
-  const redirectTo = redirect || "/account";
+  const redirectTo = safeRedirect(redirect);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,8 +56,7 @@ export function LoginForm({ redirect }: { redirect?: string }) {
         <div className="card" style={{ padding: 38 }}>
           <h2 className="text-center">Customer Login</h2>
           <p className="muted text-center text-[13px]">
-            Demo authentication, use <strong>demo@denisco.com</strong> /{" "}
-            <strong>demo123</strong>, or register a new account.
+            Sign in to track your orders and consultation bookings.
           </p>
 
           {error && (

@@ -6,12 +6,14 @@ export const API = {
     logout: "/api/v1/auth/logout",
     forgotPassword: "/api/v1/auth/forgot-password",
     resetPassword: "/api/v1/auth/reset-password",
+    changePassword: "/api/v1/auth/change-password",
     me: "/api/v1/auth/me",
   },
   products: {
     list: "/api/v1/products",
     byId: (id: string) => `/api/v1/products/${id}`,
     bySlug: (slug: string) => `/api/v1/products/slug/${slug}`,
+    related: (slug: string) => `/api/v1/products/slug/${slug}/related`,
   },
   categories: {
     list: "/api/v1/categories",
@@ -27,11 +29,13 @@ export const API = {
     create: "/api/v1/orders",
     list: "/api/v1/orders",
     byId: (id: string) => `/api/v1/orders/${id}`,
+    byNumber: (number: string) => `/api/v1/orders/number/${number}`,
     cancel: (id: string) => `/api/v1/orders/${id}/cancel`,
   },
   payments: {
     initialize: "/api/v1/payments/initialize",
     verify: "/api/v1/payments/verify",
+    list: "/api/v1/payments",
     byRef: (ref: string) => `/api/v1/payments/${ref}`,
   },
   consultations: {

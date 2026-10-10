@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/layout/page-hero";
 import { SITE } from "@/lib/constants";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ContactForm } from "./contact-form";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
   description:
-    "Get in touch with DENISCO Global Agriculture — visit our farm, call us, or send us a message.",
-};
+"Get in touch with DENISCO Global Agriculture — visit our farm, call us, or send us a message.",
+  path: "/contact",
+});
 
 const INFO_CARDS = [
   { icon: MapPin, label: "Business Address", text: SITE.company.address },
@@ -55,49 +57,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="card" style={{ padding: 36 }}>
             <h3>Send Us a Message</h3>
-            <form>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="ct-name">Full Name</label>
-                  <input
-                    type="text"
-                    id="ct-name"
-                    className="form-control"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="ct-email">Email Address</label>
-                  <input
-                    type="email"
-                    id="ct-email"
-                    className="form-control"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="ct-subject">Subject</label>
-                <input
-                  type="text"
-                  id="ct-subject"
-                  className="form-control"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="ct-msg">Message</label>
-                <textarea
-                  id="ct-msg"
-                  rows={5}
-                  className="form-control"
-                  required
-                />
-              </div>
-              <Button type="submit" variant="primary" block>
-                Send Message
-              </Button>
-            </form>
+            <ContactForm />
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/auth-provider";
+import { firstIssue, registerSchema } from "@/lib/validation/schemas";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -20,19 +21,33 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+
+    // The form takes one name field, as the prototype does; the API stores
+    // first and last separately.
+    const [firstName, ...rest] = name.trim().split(/\s+/);
+
+    const parsed = registerSchema.safeParse({
+      first_name: firstName ?? "",
+      last_name: rest.join(" "),
+      email,
+      phone,
+      password,
+      confirm_password: confirmPassword,
+    });
+
+    if (!parsed.success) {
+      setError(firstIssue(parsed.error));
       return;
     }
-    const [firstName, ...rest] = name.trim().split(/\s+/);
+
     setLoading(true);
     try {
       await register({
-        first_name: firstName || "",
-        last_name: rest.join(" "),
-        email,
-        phone,
-        password,
+        first_name: parsed.data.first_name,
+        last_name: parsed.data.last_name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        password: parsed.data.password,
       });
       router.push("/account");
     } catch (err: unknown) {
@@ -52,7 +67,7 @@ export default function RegisterPage() {
         <div className="card" style={{ padding: 38 }}>
           <h2 className="text-center">Create an Account</h2>
           <p className="muted text-center text-[13px]">
-            Demo registration for prototype purposes only.
+            Create an account to shop and book farm consultations.
           </p>
 
           {error && (
@@ -104,7 +119,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
             <div className="form-group">
@@ -116,7 +131,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
             <Button type="submit" variant="primary" block disabled={loading}>

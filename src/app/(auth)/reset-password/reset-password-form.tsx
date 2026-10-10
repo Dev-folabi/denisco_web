@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { apiClient } from "@/lib/api/client";
+import { API } from "@/lib/api/endpoints";
 
 export function ResetPasswordForm({ token }: { token?: string }) {
   const [password, setPassword] = useState("");
@@ -24,21 +26,16 @@ export function ResetPasswordForm({ token }: { token?: string }) {
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, password }),
-        },
-      );
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error?.message || "Reset failed");
-      }
+      await apiClient.post(API.auth.resetPassword, { token, password });
       setDone(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(
+        err instanceof Error && err.message === "Failed to fetch"
+          ? "Unable to connect to the server. Please try again later."
+          : err instanceof Error
+            ? err.message
+            : "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -79,7 +76,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <div className="form-group">
@@ -91,7 +88,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
               <Button type="submit" variant="primary" block disabled={loading}>

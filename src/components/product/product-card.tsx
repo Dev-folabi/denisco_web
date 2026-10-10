@@ -6,18 +6,9 @@ import { Eye, ShoppingCart, Tag } from "lucide-react";
 import { StockBadge } from "./stock-badge";
 import { MoneyFromKobo } from "@/lib/utils/format";
 
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  category: string;
-  unit: string;
-  price: number;
-  stock: number;
-  images: string[];
-  status: string;
-}
+import type { Product } from "@/features/products/types";
+
+export type { Product };
 
 interface ProductCardProps {
   product: Product;

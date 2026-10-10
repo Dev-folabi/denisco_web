@@ -1,13 +1,9 @@
 import { Clock } from "lucide-react";
 import { MoneyFromKobo } from "@/lib/utils/format";
 
-export interface ConsultType {
-  id: string;
-  name: string;
-  description: string;
-  duration: string;
-  price: number;
-}
+import type { ConsultationType as ConsultType } from "@/features/consultations/types";
+
+export type { ConsultType };
 
 interface ConsultTypeCardProps {
   type: ConsultType;

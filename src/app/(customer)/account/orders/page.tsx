@@ -1,21 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { PackageOpen } from "lucide-react";
+import { Loader2, PackageOpen } from "lucide-react";
 import { StatusPill } from "@/components/account/status-pill";
-import type { Order } from "@/components/account/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MoneyFromKobo, fmtDate } from "@/lib/utils/format";
-
-const orders: Order[] = [];
+import { useOrders } from "@/features/orders/hooks";
 
 export default function MyOrdersPage() {
+  const { data, isPending } = useOrders(1, 50);
+  const orders = data?.data ?? [];
+
   return (
     <>
       <h1>My Orders</h1>
 
       <div className="panel">
-        {orders.length ? (
+        {isPending ? (
+          <div className="flex min-h-[200px] items-center justify-center">
+            <Loader2
+              size={26}
+              className="animate-spin text-olive"
+              aria-label="Loading your orders"
+            />
+          </div>
+        ) : orders.length ? (
           <div className="table-wrap">
             <table className="account-table">
               <thead>

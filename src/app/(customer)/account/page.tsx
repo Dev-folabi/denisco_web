@@ -1,18 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarCheck, Coins, Package, PackageOpen, User } from "lucide-react";
+import {
+  CalendarCheck,
+  Coins,
+  Loader2,
+  Package,
+  PackageOpen,
+  User,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { StatCard } from "@/components/account/stat-card";
 import { StatusPill } from "@/components/account/status-pill";
-import type { Order } from "@/components/account/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MoneyFromKobo, fmtDate } from "@/lib/utils/format";
-
-const orders: Order[] = [];
+import { useOrders } from "@/features/orders/hooks";
+import { useBookingCount } from "@/features/consultations/hooks";
 
 export default function AccountDashboard() {
   const { user } = useAuth();
+  // One page of orders drives both the stat cards and the recent list.
+  const { data, isPending } = useOrders(1, 50);
+  // The bookings count comes from its own request, because the orders page
+  // says nothing about consultations.
+  const { count: bookingCount, isPending: bookingsPending } = useBookingCount();
+
+  const orders = data?.data ?? [];
+  const totalOrders = data?.meta?.total ?? orders.length;
+  // Only paid orders count as money spent.
+  const totalSpent = orders
+    .filter((order) => order.payment_status === "paid")
+    .reduce((sum, order) => sum + order.total, 0);
 
   return (
     <>
@@ -22,10 +40,26 @@ export default function AccountDashboard() {
       </p>
 
       <div className="stat-cards">
-        <StatCard label="Total Orders" value="0" icon={Package} />
-        <StatCard label="Total Spent" value="₦0" icon={Coins} />
-        <StatCard label="Consultations Booked" value="0" icon={CalendarCheck} />
-        <StatCard label="Account Status" value="Active" icon={User} />
+        <StatCard
+          label="Total Orders"
+          value={isPending ? "—" : String(totalOrders)}
+          icon={Package}
+        />
+        <StatCard
+          label="Total Spent"
+          value={isPending ? "—" : MoneyFromKobo(totalSpent)}
+          icon={Coins}
+        />
+        <StatCard
+          label="Consultations Booked"
+          value={bookingsPending ? "—" : String(bookingCount)}
+          icon={CalendarCheck}
+        />
+        <StatCard
+          label="Account Status"
+          value={user?.status === "active" ? "Active" : (user?.status ?? "—")}
+          icon={User}
+        />
       </div>
 
       <div className="panel">
@@ -36,7 +70,15 @@ export default function AccountDashboard() {
           </Link>
         </div>
 
-        {orders.length ? (
+        {isPending ? (
+          <div className="flex min-h-[160px] items-center justify-center">
+            <Loader2
+              size={24}
+              className="animate-spin text-olive"
+              aria-label="Loading your orders"
+            />
+          </div>
+        ) : orders.length ? (
           <div className="table-wrap">
             <table className="account-table">
               <thead>

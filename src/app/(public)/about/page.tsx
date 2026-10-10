@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
@@ -15,11 +16,12 @@ import {
   Target,
 } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description:
-    "Learn about DENISCO Global Agriculture — our vision, mission, values, and integrated approach to sustainable farming in Nigeria.",
-};
+"Learn about DENISCO Global Agriculture — our vision, mission, values, and integrated approach to sustainable farming in Nigeria.",
+  path: "/about",
+});
 
 const VALUES = [
   {

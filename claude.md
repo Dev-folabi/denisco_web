@@ -208,7 +208,7 @@ src/
 3. **Failed:** Red X, "Payment Failed", "Try Again" + "Cancel" buttons
 
 ### 2.9 Consultation Page (`/consultation`)
-- [x] **Implement Consultation Page**
+- [x] **Implement Consultation Page** — types, dates and time slots come from the API; a taken time is struck through for the chosen service, and booking works signed in or as a guest
 
 **Rendering:** Client-side (availability from API)
 **Sections:**
@@ -235,7 +235,7 @@ src/
 **Content:** Intro box (olive left border), 25 policy sections with eyebrow, h2, paragraphs, bullet lists, principle quotes. Policy promise box at end (forest bg).
 
 ### 2.12 Auth Pages
-- [x] **Implement Login Page** — Card (440px), email + password fields, "Forgot password?" link → `/forgot-password`, demo hint, register link. `?redirect=checkout` support.
+- [x] **Implement Login Page** — Card (440px), email + password fields, "Forgot password?" link → `/forgot-password`, register link. `?redirect=` support, restricted to same-site paths.
 - [x] **Implement Register Page** — Card (480px), name + email + phone + password + confirm password, login link.
 - [x] **Implement Forgot Password Page** — Card (440px), email field, success state.
 - [x] **Implement Reset Password Page** — Card (440px), new password + confirm, token from URL.
@@ -246,7 +246,7 @@ src/
 - [x] **Implement My Orders** (`/account/orders`) — Table: Order No., Date, Items, Total, Payment status, Fulfillment status, View link.
 - [x] **Implement Order Detail** (`/account/orders/[id]`) — Breadcrumb, order detail card (order number, date, payment + fulfillment pills, items table, subtotal/delivery/total summary, delivery info, payment info).
 - [x] **Implement Transactions** (`/account/payments`) — Table: Reference, Order No., Amount, Method, Status, Date.
-- [x] **Implement My Bookings** (`/account/consultations`) — Table: Reference, Type, Date, Time, Status.
+- [x] **Implement My Bookings** (`/account/consultations`) — Table: Reference, Type, Date, Time, Status, with cancellation for a booking that still holds its time.
 
 ---
 
@@ -303,8 +303,14 @@ src/
 - [x] Parse response: extract `data` from `{success, message, data}` envelope
 - [x] Throw typed errors for `{success: false, error: {code, message}}`
 
+### Auth Integration (live)
+- [x] `NEXT_PUBLIC_API_URL` holds the API origin; `lib/api/endpoints.ts` carries the `/api/v1` paths
+- [x] Register, login, logout, forgot-password, reset-password and change-password call the backend through `apiClient`
+- [x] Session restore on load: `POST /auth/refresh` runs before `GET /auth/me`, because the in-memory access token does not survive a page load
+- [x] `RequireAuth` guards `(customer)/account`, redirecting to `/login?redirect=…` and returning the customer there after signing in
+
 ### Feature API Pattern
-- [ ] Set up feature API pattern per module (`features/*/api.ts`) — dirs exist but are empty (no backend yet)
+- [x] Set up feature API pattern per module (`features/*/api.ts`) — `products`, `cart`, `orders`, `payments` and `consultations` implemented
 ```typescript
 export async function getProducts(params?: ProductListParams): Promise<PaginatedResponse<Product>> {
   return apiClient.get('/api/v1/products', { params });
@@ -312,7 +318,7 @@ export async function getProducts(params?: ProductListParams): Promise<Paginated
 ```
 
 ### TanStack Query Hooks
-- [ ] Set up TanStack Query hooks per module (`features/*/hooks.ts`) — provider installed, no queries wired yet
+- [x] Set up TanStack Query hooks per module (`features/*/hooks.ts`) — catalogue, cart, order, payment and consultation hooks wired, with cache invalidation on every mutation that changes stock or slot availability
 ```typescript
 export function useProducts(params?: ProductListParams) {
   return useQuery({ queryKey: ['products', params], queryFn: () => getProducts(params) });
@@ -320,7 +326,7 @@ export function useProducts(params?: ProductListParams) {
 ```
 
 ### Server-Side Fetching
-- [ ] For SSR/ISR pages (home, shop, product detail): fetch directly with `fetch()` + `next: { revalidate: 60 }` — pages render server-side but with empty demo data (no backend yet)
+- [x] For SSR/ISR pages (home, shop, product detail): fetch directly with `fetch()` + `next: { revalidate: 60 }` — `lib/api/server.ts` reads the catalogue on the server and the pages hand it to the client components as TanStack Query's `initialData`, which then refetches on mount. The HTML a crawler receives holds real products; stock figures stay live
 
 ---
 
@@ -346,11 +352,11 @@ export function useProducts(params?: ProductListParams) {
 
 ## 6. SEO & Metadata
 
-- [ ] Every page: `<title>`, `<meta name="description">`, Open Graph tags — title/description done (root layout + about/services/contact/policy); Open Graph + remaining pages pending
+- [x] Every page: `<title>`, `<meta name="description">`, Open Graph tags — `lib/seo.ts` builds them in one place, because Next replaces nested metadata objects rather than merging them; the root layout sets `metadataBase` so canonical paths resolve
 - [x] Home: "DENISCO GLOBAL AGRICULTURE LTD | Farm to Fork Agriculture & Agro-Services"
-- [ ] Product pages: dynamic title and description from product data (no product data yet)
-- [ ] Sitemap generation
-- [ ] robots.txt
+- [x] Product pages: dynamic title and description from product data — `generateMetadata` builds both from the product, with its image as the share card; a slug that is not in the catalogue returns a real 404
+- [x] Sitemap generation — `app/sitemap.ts`: the public pages plus every listed product, regenerated hourly
+- [x] robots.txt — `app/robots.ts`: crawlable everywhere except the account, cart, checkout, payment and confirmation routes
 
 ---
 
@@ -369,16 +375,96 @@ export function useProducts(params?: ProductListParams) {
 
 ## 8. Testing
 
+Run them with `npm test` (Vitest, 32 tests) and `npm run test:e2e` (Playwright,
+18 tests across a desktop and a phone-sized project). The end-to-end suite needs
+the API running with a seeded catalogue, and with `RATE_LIMIT_ENABLED=false` —
+it registers an account per spec, and the signup limiter is 10 an hour.
+
 ### Unit Tests
-- [ ] Utility functions (Money formatter, date formatting)
-- [ ] Zod schemas (product, order, booking validation)
-- [ ] Auth token management
+- [x] Utility functions (Money formatter, date formatting) — `lib/utils/format.test.ts`, with the timezone pinned to Africa/Lagos so the suite does not depend on the machine's
+- [x] Zod schemas (product, order, booking validation) — `lib/validation/schemas.test.ts`; the schemas restate the API's bounds and are wired into the register, checkout, booking and contact forms
+- [x] Auth token management — `lib/auth/token-store.test.ts`, including an assertion that the access token never reaches browser storage
 
 ### E2E Tests (Playwright)
-- [ ] Home page renders correctly
-- [ ] Shop: filter by category, sort, view product
-- [ ] Product detail: add to cart with quantity
-- [ ] Cart: update qty, remove item, proceed to checkout
-- [ ] Login and register flows
-- [ ] Consultation: select type, date, time, submit booking
-- [ ] Responsive: mobile nav, mobile account nav
+- [x] Home page renders correctly — including that the featured products are in the HTML, not only after hydration
+- [x] Shop: filter by category, sort, view product — the filtered grid is checked against the API's own list, so a filter that returned everything would fail
+- [x] Product detail: add to cart with quantity
+- [x] Cart: update qty, remove item, proceed to checkout
+- [x] Login and register flows — register, sign out, sign back in, a wrong password, a mistyped confirmation, and the redirect back after signing in
+- [x] Consultation: select type, date, time, submit booking — as a guest, through to the `CB-` reference
+- [x] Responsive: mobile nav, mobile account nav — at 390 × 844: the panel slides in, links through and slides out; the grid becomes one column; nothing overflows sideways
+
+---
+
+## 9. Production readiness (2026-10-06)
+
+- **Error and loading states.** `app/error.tsx` keeps the header and footer so a
+  visitor who hits it is still on the site, and offers `reset`;
+  `app/global-error.tsx` covers a failure in the root layout itself and carries
+  its own markup; `app/not-found.tsx` was already there. The loading fallback
+  sits at `(customer)/loading.tsx` rather than at the root **on purpose**: a
+  root `loading.tsx` starts streaming the response, and a status code cannot
+  change once streaming has begun, which turned a removed product into a soft
+  404 (200 with the not-found page). Scoped this way, `/shop/<unknown>` returns
+  a real 404.
+- **Performance and Lighthouse.** Desktop 97–100 across home, shop, product,
+  consultation and about; mobile 79–86 under the preset's slow-4G and 4× CPU
+  throttling. CLS is 0 everywhere. `docs/lighthouse-audit.md` records the
+  scores, what changed (video preload, image `sizes`, ImageKit transformations
+  for the video posters) and the three findings left open because fixing them
+  would override the prototype: brand-colour contrast, heading order, and the
+  "Learn More" link copy.
+- **Form validation.** The ad-hoc checks in the register, checkout and booking
+  forms were replaced by the shared Zod schemas, which mirror the API's rules;
+  the contact form now validates and hands the message to the visitor's mail
+  client instead of posting into nothing, since the API has no contact endpoint.
+- **Two defects found and fixed while testing.** Signing out from the account
+  area landed on `/login?redirect=/account` instead of the home page, because
+  the route guard saw the session go before the navigation committed — the guard
+  now stands aside while a sign-out is in flight. And adding to the cart in the
+  first moment after a page load bounced a signed-in customer to the login page,
+  because the in-memory access token has not been restored yet; the action now
+  only redirects someone who is definitely signed out, and lets the client's
+  refresh-and-retry handle the rest.
+- **CI.** `.github/workflows/ci.yml` runs lint, typecheck, the unit tests and a
+  production build. The end-to-end suite is left out of CI because it needs the
+  Go API, MongoDB as a replica set and Redis, which live in the backend
+  repository.
+
+---
+
+## 10. Changes after production readiness (2026-10-10)
+
+See §7 of the root `claude.md` for the reasoning. In this repository:
+
+- **The consultation page** no longer asks for availability per service: a
+  booked hour is closed to every service, so there is one calendar. Submitting
+  a booking now hands over to Paystack when the service carries a fee. If the
+  handover fails — no provider configured, provider down — the visitor still
+  reaches the confirmation page with their slot held, rather than losing the
+  booking they just made.
+- **The confirmation page** shows the fee and its state, and offers the payment
+  again while it is outstanding. It works for a guest: the reference from the
+  redirect is sent with the request, which is what lets the API return a
+  booking that belongs to no account.
+- **The payment callback** handles both kinds of payment and no longer waits to
+  be authenticated — a guest paying a consultation fee has no session, only the
+  reference in the URL.
+- **`/account/consultations`** gains Fee and Payment columns and a "Pay Fee"
+  action, which is also how a declined card is retried.
+- **`/account`**: "Consultations Booked" was hard-coded to `0` and now reads
+  the customer's own booking total.
+- **`/account/payments`**: the "Order No." column became "For", because a
+  transaction now settles an order or a consultation.
+- The booking end-to-end test accepts either destination after submitting,
+  since whether the handover happens depends on the API having Paystack keys.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

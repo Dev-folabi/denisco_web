@@ -1,3 +1,12 @@
+/**
+ * Public origin of the customer site, used for canonical URLs, Open Graph
+ * tags, the sitemap and robots.txt. It is the one place those absolute URLs
+ * come from, so a domain change is a single edit.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000"
+).replace(/\/$/, "");
+
 export const SITE = {
   company: {
     name: "DENISCO GLOBAL AGRICULTURE LIMITED",
@@ -28,6 +37,12 @@ export const SITE = {
       "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/CEO_IMAGE_1.jpeg",
     ceoPhoto2:
       "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/CEO_IMAGE_2.jpeg",
+    /**
+     * Video posters go through ImageKit's own transformations rather than
+     * next/image: they are the `poster` attribute of a <video>, which the
+     * image pipeline never sees. Unsized, the two of them are 215 KB of PNG
+     * below the fold on every home-page view.
+     */
     videos: {
       farmIntroduction: {
         title: "Farm Introduction by the CEO",
@@ -36,7 +51,7 @@ export const SITE = {
           "A walk-through of our integrated farm divisions, presented by our CEO.",
         src: "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/FARM_INTRO.mp4",
         poster:
-          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid1_tumb.png",
+          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid1_tumb.png?tr=w-900,q-70,f-auto",
       },
       agriculturalEducation: {
         title: "Agricultural Education by the CEO",
@@ -45,7 +60,7 @@ export const SITE = {
           "Practical agricultural education for farmers and aspiring farm owners.",
         src: "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/agricultural_education.mp4",
         poster:
-          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid2_tumb.png",
+          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid2_tumb.png?tr=w-900,q-70,f-auto",
       },
     },
     heroImage: "/images/hero-crop-field.jpg",

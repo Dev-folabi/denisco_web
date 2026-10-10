@@ -1,18 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   CalendarCheck,
   Gauge,
-  Lock,
   LogOut,
   Package,
   Receipt,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-provider";
-import { EmptyState } from "@/components/ui/empty-state";
+import { RequireAuth } from "@/components/auth/require-auth";
 
 interface NavItem {
   label: string;
@@ -48,29 +47,32 @@ export default function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
+  return (
+    <RequireAuth>
+      <AccountShell>{children}</AccountShell>
+    </RequireAuth>
+  );
+}
+
+/** The dashboard shell, rendered only for a signed-in customer. */
+function AccountShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, isLoading, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
 
   const isActive = (href: string) =>
     href === "/account"
       ? pathname === "/account"
       : pathname.startsWith(href);
 
-  if (!isLoading && !user) {
-    return (
-      <section className="section">
-        <div className="container" style={{ maxWidth: "500px" }}>
-          <EmptyState
-            icon={Lock}
-            title="Please Log In"
-            description="Log in to view your account dashboard."
-            ctaLabel="Login"
-            ctaHref="/login"
-          />
-        </div>
-      </section>
-    );
-  }
+  // Sign out, then land on the home page. The route guard around this layout
+  // stands aside while a sign-out is in flight, so this navigation is not
+  // turned into a redirect back to the sign-in page.
+  const handleLogout = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    await logout();
+    router.push("/");
+  };
 
   const initials = user
     ? `${user.first_name?.[0] || ""}${user.last_name?.[0] || ""}`.toUpperCase()
@@ -103,7 +105,7 @@ export default function AccountLayout({
               </Link>
             ))}
 
-            <Link href="/" className="danger" onClick={logout}>
+            <Link href="/" className="danger" onClick={handleLogout}>
               <LogOut size={16} />
               Logout
             </Link>
@@ -123,7 +125,7 @@ export default function AccountLayout({
                 <span>{item.shortLabel}</span>
               </Link>
             ))}
-            <Link href="/" aria-label="Log out" onClick={logout}>
+            <Link href="/" aria-label="Log out" onClick={handleLogout}>
               <span className="nav-icon">
                 <LogOut size={15} className="[@media(max-width:390px)]:size-[14px]" />
               </span>

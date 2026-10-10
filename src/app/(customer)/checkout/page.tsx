@@ -2,35 +2,138 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Info, Lock, ShoppingBasket } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Info, Loader2, Lock, ShoppingBasket } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MoneyFromKobo } from "@/lib/utils/format";
 import { SITE } from "@/lib/constants";
-
-interface CheckoutItem {
-  id: string;
-  name: string;
-  unit: string;
-  unit_price: number;
-  quantity: number;
-}
+import { useToast } from "@/components/ui/toast";
+import { ApiRequestError } from "@/lib/api/client";
+import { checkoutSchema, firstIssue } from "@/lib/validation/schemas";
+import { useCart } from "@/features/cart/hooks";
+import { useCreateOrder } from "@/features/orders/hooks";
+import { useInitializePayment } from "@/features/payments/hooks";
 
 export default function CheckoutPage() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const { data: cart, isPending: cartPending } = useCart();
+  const createOrder = useCreateOrder();
+  const initializePayment = useInitializePayment();
+
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">(
     "delivery",
   );
+  const [address, setAddress] = useState("");
+  const [error, setError] = useState("");
 
-  const cartItems: CheckoutItem[] = [];
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.unit_price * item.quantity,
-    0,
-  );
+  // The contact fields show the account's details until the customer edits
+  // one, and only the edits are held in state. Deriving them rather than
+  // copying the account into state on load means the form is correct on its
+  // first render — even when the session resolves after the page has painted —
+  // and an untouched field still submits the value the customer can see.
+  const [edits, setEdits] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+  }>({});
+
+  const name =
+    edits.name ??
+    (user ? `${user.first_name} ${user.last_name}`.trim() : "");
+  const email = edits.email ?? user?.email ?? "";
+  const phone = edits.phone ?? user?.phone ?? "";
+
+  const setName = (value: string) =>
+    setEdits((current) => ({ ...current, name: value }));
+  const setEmail = (value: string) =>
+    setEdits((current) => ({ ...current, email: value }));
+  const setPhone = (value: string) =>
+    setEdits((current) => ({ ...current, phone: value }));
+
+  const items = cart?.items ?? [];
+  const subtotal = cart?.subtotal ?? 0;
   const deliveryFee =
     deliveryMethod === "delivery" ? SITE.deliveryFee * 100 : 0;
   const total = subtotal + deliveryFee;
+
+  const submitting = createOrder.isPending || initializePayment.isPending;
+
+  /**
+   * Places the order, then hands the customer to Paystack.
+   *
+   * The order is created first so the stock is reserved before payment
+   * begins; if payment cannot be started the order is still there, unpaid,
+   * and the customer can retry from their account.
+   */
+  async function placeOrder() {
+    setError("");
+
+    const parsed = checkoutSchema.safeParse({
+      name,
+      email,
+      phone,
+      delivery_method: deliveryMethod,
+      address,
+    });
+
+    if (!parsed.success) {
+      setError(firstIssue(parsed.error));
+      return;
+    }
+
+    try {
+      const order = await createOrder.mutateAsync({
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        delivery_method: parsed.data.delivery_method,
+        address:
+          parsed.data.delivery_method === "delivery"
+            ? parsed.data.address
+            : undefined,
+      });
+
+      try {
+        const payment = await initializePayment.mutateAsync(order.id);
+        window.location.href = payment.authorization_url;
+      } catch (paymentError) {
+        // The order exists and is holding stock, so send the customer to it
+        // rather than leaving them on a form that looks like it failed.
+        toast(
+          "error",
+          paymentError instanceof ApiRequestError
+            ? paymentError.message
+            : "Could not start the payment.",
+        );
+        router.push(`/order-confirmation/${order.id}`);
+      }
+    } catch (orderError) {
+      setError(
+        orderError instanceof ApiRequestError
+          ? orderError.message
+          : "Could not place your order. Please try again.",
+      );
+    }
+  }
+
+  if (isLoading || (isAuthenticated && cartPending)) {
+    return (
+      <section className="section">
+        <div className="container flex min-h-[40vh] items-center justify-center">
+          <Loader2
+            size={28}
+            className="animate-spin text-olive"
+            aria-label="Loading checkout"
+          />
+        </div>
+      </section>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -46,7 +149,7 @@ export default function CheckoutPage() {
               You need a customer account to complete checkout and track your
               order.
             </p>
-            <Link href="/login?redirect=checkout" className="btn btn-primary">
+            <Link href="/login?redirect=/checkout" className="btn btn-primary">
               Login
             </Link>{" "}
             <Link href="/register" className="btn btn-outline">
@@ -58,7 +161,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (cartItems.length === 0) {
+  if (items.length === 0) {
     return (
       <section className="section">
         <div className="container">
@@ -78,8 +181,21 @@ export default function CheckoutPage() {
     <section className="section">
       <div className="container">
         <h1>Checkout</h1>
+
+        {error && (
+          <div className="mb-5 rounded-[10px] bg-badge-red-bg px-4 py-3 text-sm font-bold text-badge-red-text">
+            {error}
+          </div>
+        )}
+
         <div className="cart-layout">
-          <form noValidate>
+          <form
+            noValidate
+            onSubmit={(event) => {
+              event.preventDefault();
+              placeOrder();
+            }}
+          >
             <fieldset>
               <legend>01 · Contact Details</legend>
               <div className="form-row">
@@ -89,11 +205,8 @@ export default function CheckoutPage() {
                     className="form-control"
                     id="co-name"
                     required
-                    defaultValue={
-                      user
-                        ? `${user.first_name} ${user.last_name}`.trim()
-                        : ""
-                    }
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
                   />
                 </div>
                 <div className="form-group">
@@ -103,7 +216,8 @@ export default function CheckoutPage() {
                     className="form-control"
                     id="co-email"
                     required
-                    defaultValue={user?.email ?? ""}
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </div>
               </div>
@@ -113,7 +227,8 @@ export default function CheckoutPage() {
                   className="form-control"
                   id="co-phone"
                   required
-                  defaultValue={user?.phone ?? ""}
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
                 />
               </div>
             </fieldset>
@@ -132,7 +247,7 @@ export default function CheckoutPage() {
                   checked={deliveryMethod === "delivery"}
                   onChange={() => setDeliveryMethod("delivery")}
                 />{" "}
-                Home Delivery (₦2,500 flat fee within Abuja, demo rate)
+                Home Delivery (₦2,500 flat fee within Abuja)
               </label>
               <label
                 className={`radio-card ${
@@ -161,27 +276,31 @@ export default function CheckoutPage() {
                   id="co-address"
                   rows={2}
                   placeholder="Enter your delivery address"
+                  value={address}
+                  onChange={(event) => setAddress(event.target.value)}
                 />
               </div>
             </fieldset>
           </form>
 
           <CartSummary
-            lines={cartItems.map((item) => ({
+            lines={items.map((item) => ({
               label: `${item.name} × ${item.quantity}`,
-              value: MoneyFromKobo(item.unit_price * item.quantity),
+              value: MoneyFromKobo(item.line_total),
             }))}
             subtotal={subtotal}
             deliveryFee={deliveryFee}
             total={total}
             note={
               <>
-                <Info size={12} /> Payment is simulated automatically when you
-                place your order.
+                <Info size={12} /> You will be taken to Paystack to complete
+                payment securely.
               </>
             }
-            ctaLabel="Place Order"
+            ctaLabel={submitting ? "Placing Order…" : "Place Order"}
             ctaIcon={<Lock size={14} />}
+            onCtaClick={placeOrder}
+            disabled={submitting || cart?.has_unavailable_items}
           />
         </div>
       </div>

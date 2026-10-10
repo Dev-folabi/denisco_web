@@ -1,27 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
+import { verifyPayment } from "@/features/payments/api";
+import type { Payment } from "@/features/payments/types";
+import { useAuth } from "@/lib/auth/auth-provider";
 
 type PaymentState = "processing" | "success" | "failed";
 
 export function PaymentCallbackContent({ reference }: { reference?: string }) {
-  const ref = reference;
+  const { isLoading } = useAuth();
   const [state, setState] = useState<PaymentState>(
-    ref ? "processing" : "failed",
+    reference ? "processing" : "failed",
   );
-  const [orderNumber, setOrderNumber] = useState("");
+  const [payment, setPayment] = useState<Payment | null>(null);
+  const [message, setMessage] = useState("");
+
+  // React runs effects twice in development; verification is idempotent on the
+  // server, but this keeps the page from firing two requests on every load.
+  const verified = useRef(false);
 
   useEffect(() => {
-    if (!ref) return;
-    // Payment verification will be handled when backend is connected
-    const timer = setTimeout(() => {
-      setState("success");
-      setOrderNumber("DG-000000");
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [ref]);
+    // The session is restored from the refresh cookie on load, so wait for
+    // that before asking: an order payment is only readable by its owner.
+    // A consultation fee paid by a guest has no session at all, which is why
+    // this no longer waits to be authenticated — only to know either way.
+    if (!reference || isLoading || verified.current) return;
+    verified.current = true;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // The backend asks Paystack for the authoritative result: arriving
+        // back here proves nothing about whether the payment succeeded.
+        const result = await verifyPayment(reference);
+        if (cancelled) return;
+
+        setPayment(result);
+
+        if (result.status === "successful") {
+          setState("success");
+          return;
+        }
+
+        setState("failed");
+        setMessage(
+          result.status === "pending" || result.status === "initialized"
+            ? "Your payment has not been confirmed yet. If you completed it, refresh this page in a moment."
+            : "The payment was not completed.",
+        );
+      } catch {
+        if (!cancelled) {
+          setState("failed");
+          setMessage("We could not confirm this payment.");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [reference, isLoading]);
+
+  const isConsultation = payment?.purpose === "consultation";
 
   return (
     <section className="section">
@@ -40,14 +83,45 @@ export function PaymentCallbackContent({ reference }: { reference?: string }) {
           {state === "processing" && (
             <div className="pay-state loading">
               <Loader2 size={58} className="pay-icon block animate-spin" />
-              <h3>Confirming Your Order…</h3>
+              <h3>Confirming Your Payment…</h3>
               <p className="muted">
-                Please wait while payment is simulated automatically.
+                Please wait while we confirm your payment with Paystack.
               </p>
             </div>
           )}
 
-          {state === "success" && (
+          {state === "success" && isConsultation && (
+            <div className="pay-state success">
+              <CheckCircle size={58} className="pay-icon block" />
+              <h3>Payment Successful!</h3>
+              <p className="muted">
+                Your consultation is confirmed. We will be in touch before your
+                appointment.
+              </p>
+              <div className="order-ref-box">
+                <small className="muted">Booking Reference</small>
+                <br />
+                <strong>{payment?.booking_reference}</strong>
+              </div>
+              <div style={{ marginTop: 22 }}>
+                <Link
+                  href={
+                    payment?.booking_id
+                      ? `/booking-confirmation/${payment.booking_id}?ref=${payment.booking_reference ?? ""}`
+                      : "/account/consultations"
+                  }
+                  className="btn btn-primary"
+                >
+                  View Booking
+                </Link>{" "}
+                <Link href="/shop" className="btn btn-outline">
+                  Continue Shopping
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {state === "success" && !isConsultation && (
             <div className="pay-state success">
               <CheckCircle size={58} className="pay-icon block" />
               <h3>Payment Successful!</h3>
@@ -55,19 +129,19 @@ export function PaymentCallbackContent({ reference }: { reference?: string }) {
               <div className="order-ref-box">
                 <small className="muted">Order Number</small>
                 <br />
-                <strong>{orderNumber}</strong>
+                <strong>{payment?.order_number}</strong>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  justifyContent: "center",
-                  marginTop: 10,
-                }}
-              >
-                <Link href="/account/orders" className="btn btn-primary">
+              <div style={{ marginTop: 22 }}>
+                <Link
+                  href={
+                    payment?.order_id
+                      ? `/account/orders/${payment.order_id}`
+                      : "/account/orders"
+                  }
+                  className="btn btn-primary"
+                >
                   View Order
-                </Link>
+                </Link>{" "}
                 <Link href="/shop" className="btn btn-outline">
                   Continue Shopping
                 </Link>
@@ -76,27 +150,48 @@ export function PaymentCallbackContent({ reference }: { reference?: string }) {
           )}
 
           {state === "failed" && (
-            <div className="pay-state fail">
+            <div className="pay-state failed">
               <XCircle size={58} className="pay-icon block" />
-              <h3>Payment Failed</h3>
+              <h3>Payment Not Confirmed</h3>
               <p className="muted">
-                Your simulated payment could not be completed. No charge was
-                made and your cart is unaffected.
+                {message || "This payment reference could not be confirmed."}
               </p>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  justifyContent: "center",
-                  marginTop: 10,
-                }}
-              >
-                <Link href="/checkout" className="btn btn-primary">
-                  Try Again
-                </Link>
-                <Link href="/" className="btn btn-outline">
-                  Cancel
-                </Link>
+              {/* A consultation keeps its slot when the fee is not paid, so
+                  "try again" returns to the booking rather than to a cart. */}
+              <div style={{ marginTop: 22 }}>
+                {isConsultation ? (
+                  <>
+                    <Link
+                      href={
+                        payment?.booking_id
+                          ? `/booking-confirmation/${payment.booking_id}?ref=${payment.booking_reference ?? ""}`
+                          : "/account/consultations"
+                      }
+                      className="btn btn-primary"
+                    >
+                      Try Again
+                    </Link>{" "}
+                    <Link href="/consultation" className="btn btn-outline">
+                      Back to Consultations
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={
+                        payment?.order_id
+                          ? `/order-confirmation/${payment.order_id}`
+                          : "/cart"
+                      }
+                      className="btn btn-primary"
+                    >
+                      Try Again
+                    </Link>{" "}
+                    <Link href="/shop" className="btn btn-outline">
+                      Back to Shop
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           )}

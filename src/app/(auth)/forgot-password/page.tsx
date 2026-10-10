@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { apiClient } from "@/lib/api/client";
+import { API } from "@/lib/api/endpoints";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -15,18 +17,7 @@ export default function ForgotPasswordPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        },
-      );
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error?.message || "Request failed");
-      }
+      await apiClient.post(API.auth.forgotPassword, { email });
       setSent(true);
     } catch (err: unknown) {
       setError(

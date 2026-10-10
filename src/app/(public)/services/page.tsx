@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
 import { SectionHead } from "@/components/layout/section-head";
@@ -6,11 +7,12 @@ import { CompanyFlow } from "@/components/about/company-flow";
 import { ServiceIcon } from "@/components/services/service-icon";
 import { SITE } from "@/lib/constants";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Our Services",
   description:
-    "Explore DENISCO's 12 agricultural services — from seed production to value addition, farm development, consulting, and training.",
-};
+"Explore DENISCO's 12 agricultural services — from seed production to value addition, farm development, consulting, and training.",
+  path: "/services",
+});
 
 export default function ServicesPage() {
   return (
