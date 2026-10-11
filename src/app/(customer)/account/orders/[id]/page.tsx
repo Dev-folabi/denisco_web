@@ -42,10 +42,10 @@ export default function OrderDetailPage() {
     );
   }
 
-  // An unpaid order still holds its stock, so the customer can either finish
-  // paying or release it by cancelling.
-  const awaitingPayment =
-    order.payment_status === "pending" && order.status !== "cancelled";
+  // The API decides when an order can still be paid. That includes a declined
+  // attempt — the customer has to be able to try again, and the cart is
+  // already emptied at checkout, so this page is the only way back.
+  const awaitingPayment = order.payable;
 
   async function payNow() {
     try {

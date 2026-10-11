@@ -38,6 +38,13 @@ export interface Order {
   payment_status: OrderPaymentStatus;
   payment_ref?: string;
   payment_method?: string;
+  /**
+   * Whether another payment attempt may be started. True for an order still
+   * awaiting payment and for one whose last attempt was declined; false once
+   * it is paid, refunded or cancelled. The API decides this so the account
+   * pages do not re-derive the rule and drift from it.
+   */
+  payable: boolean;
   item_count: number;
   /**
    * Set when a payment was confirmed after the order's stock reservation had

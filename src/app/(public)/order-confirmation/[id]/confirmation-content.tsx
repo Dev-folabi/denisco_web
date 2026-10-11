@@ -42,26 +42,36 @@ export function OrderConfirmationContent({ orderId }: { orderId: string }) {
   }
 
   const paid = order.payment_status === "paid";
+  const failed = order.payment_status === "failed";
+  const state = paid ? "success" : failed ? "fail" : "loading";
+
+  // A declined attempt has already released the stock, so telling the
+  // customer the items are held would be untrue — and they would have no
+  // reason to go looking for another way to pay.
+  const title = paid
+    ? "Thank You! Your Order Is Confirmed"
+    : failed
+      ? "Payment Did Not Go Through"
+      : "Your Order Is Awaiting Payment";
+  const description = paid
+    ? "A confirmation has been recorded to your account."
+    : failed
+      ? "No money has left your account. The items have been returned to the shop — place the order again to try another payment method."
+      : "The items are held for you. Complete payment to confirm the order.";
 
   return (
     <section className="section">
       <div className="container" style={{ maxWidth: "760px" }}>
-        <div className={`pay-state ${paid ? "success" : "loading"}`}>
+        <div className={`pay-state ${state}`}>
           {paid ? (
             <CheckCircle size={58} className="pay-icon block" />
+          ) : failed ? (
+            <TriangleAlert size={58} className="pay-icon block" />
           ) : (
             <Clock size={58} className="pay-icon block" />
           )}
-          <h2>
-            {paid
-              ? "Thank You! Your Order Is Confirmed"
-              : "Your Order Is Awaiting Payment"}
-          </h2>
-          <p className="muted">
-            {paid
-              ? "A confirmation has been recorded to your account."
-              : "The items are held for you. Complete payment to confirm the order."}
-          </p>
+          <h2>{title}</h2>
+          <p className="muted">{description}</p>
         </div>
 
         <OrderDetailCard order={order} />

@@ -232,6 +232,28 @@ describe("contactSchema", () => {
       }).success,
     ).toBe(false);
   });
+
+  it("rejects a message too short to be an enquiry, as the API does", () => {
+    expect(
+      contactSchema.safeParse({
+        name: "Ada Obi",
+        email: "ada@denisco.com",
+        subject: "Snails",
+        message: "Hello",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("bounds the message at the length the API accepts", () => {
+    expect(
+      contactSchema.safeParse({
+        name: "Ada Obi",
+        email: "ada@denisco.com",
+        subject: "Snails",
+        message: "x".repeat(2001),
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe("firstIssue", () => {

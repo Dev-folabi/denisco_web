@@ -124,7 +124,10 @@ export const bookingSchema = z.object({
 
 export type BookingValues = z.infer<typeof bookingSchema>;
 
-/** The contact form, which has no API behind it yet. */
+/**
+ * The contact form. The bounds restate what `POST /api/v1/contact` accepts,
+ * so a message the API would reject never leaves the browser.
+ */
 export const contactSchema = z.object({
   name: fullName,
   email,
@@ -132,7 +135,7 @@ export const contactSchema = z.object({
     .min(1, "Please enter a subject")
     .max(150, "Subject must be 150 characters or fewer"),
   message: trimmed
-    .min(1, "Please enter a message")
+    .min(10, "Please write a little more so we can understand your enquiry")
     .max(2000, "Message must be 2000 characters or fewer"),
 });
 

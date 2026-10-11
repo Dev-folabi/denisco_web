@@ -2,16 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SITE } from "@/lib/constants";
+import { ApiRequestError } from "@/lib/api/client";
 import { contactSchema, firstIssue } from "@/lib/validation/schemas";
+import { useSubmitContact } from "@/features/contact/hooks";
 
 /**
  * The contact form.
  *
- * There is no contact endpoint on the API — the architecture's endpoint list
- * has none — so the message is handed to the visitor's mail client addressed
- * to the farm, rather than posted into nothing. The fields are still validated
- * first, so a half-filled form does not open an empty mail window.
+ * The message is posted to the API, which validates it again and hands it to
+ * the farm by email — so a visitor gets a reply wherever they are, rather than
+ * being handed a pre-filled mail window they may never open.
  */
 export function ContactForm() {
   const [name, setName] = useState("");
@@ -20,8 +20,9 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const submit = useSubmitContact();
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError("");
 
@@ -31,13 +32,16 @@ export function ContactForm() {
       return;
     }
 
-    const body = `${parsed.data.message}\n\n—\n${parsed.data.name}\n${parsed.data.email}`;
-
-    window.location.href = `mailto:${SITE.company.email}?subject=${encodeURIComponent(
-      parsed.data.subject,
-    )}&body=${encodeURIComponent(body)}`;
-
-    setSent(true);
+    try {
+      await submit.mutateAsync(parsed.data);
+      setSent(true);
+    } catch (cause) {
+      setError(
+        cause instanceof ApiRequestError
+          ? cause.message
+          : "We could not send your message just now. Please try again.",
+      );
+    }
   }
 
   return (
@@ -53,8 +57,8 @@ export function ContactForm() {
 
       {sent && (
         <p className="mb-4 rounded-[12px] bg-badge-green-bg px-4 py-3 text-[13px] text-forest">
-          Your email client should now be open with the message ready to send.
-          If nothing happened, write to {SITE.company.email}.
+          Thank you for your message. We have received it and will get back to
+          you shortly.
         </p>
       )}
 
@@ -104,8 +108,13 @@ export function ContactForm() {
           required
         />
       </div>
-      <Button type="submit" variant="primary" block>
-        Send Message
+      <Button
+        type="submit"
+        variant="primary"
+        block
+        disabled={submit.isPending}
+      >
+        {submit.isPending ? "Sending…" : "Send Message"}
       </Button>
     </form>
   );

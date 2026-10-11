@@ -310,7 +310,7 @@ src/
 - [x] `RequireAuth` guards `(customer)/account`, redirecting to `/login?redirect=…` and returning the customer there after signing in
 
 ### Feature API Pattern
-- [x] Set up feature API pattern per module (`features/*/api.ts`) — `products`, `cart`, `orders`, `payments` and `consultations` implemented
+- [x] Set up feature API pattern per module (`features/*/api.ts`) — `products`, `cart`, `orders`, `payments`, `consultations` and `contact` implemented
 ```typescript
 export async function getProducts(params?: ProductListParams): Promise<PaginatedResponse<Product>> {
   return apiClient.get('/api/v1/products', { params });
@@ -458,6 +458,42 @@ See §7 of the root `claude.md` for the reasoning. In this repository:
   transaction now settles an order or a consultation.
 - The booking end-to-end test accepts either destination after submitting,
   since whether the handover happens depends on the API having Paystack keys.
+
+## 11. The account tables fit every width (2026-10-11)
+
+- **`/account/consultations`** (and My Orders, and the dashboard's recent
+  orders) had seven columns, which is wider than the panel they sit in across
+  most window widths, so the row's action column sat outside the panel behind
+  a sideways scroll. The rows now become the prototype's stacked cards
+  whenever the **panel** is under 800px, decided by a container query on
+  `.dash-shell .panel` rather than a media query — see "Stacked tables" in
+  `design-system.md` for why the window width cannot decide it. The
+  consultation column's `min-width` is 140px, since it sets the table's
+  minimum and that minimum has to stay under the container's.
+- **The order detail's items table** keeps the prototype's 760px breakpoint:
+  its four columns fit anywhere, and it lives in a card rather than a panel.
+- **The bookings end-to-end test** now also checks 768px and 1100px, asserting
+  Pay Fee and Cancel are inside the panel and not merely on screen.
+
+## 12. The contact form posts to the API (2026-10-11)
+
+- **The contact form no longer hands the message to the visitor's mail
+  client.** It was a `mailto:` link, which meant the message only left the
+  page if the visitor had a mail app configured, the farm never received one
+  that was composed but not sent, and nothing about the submission could be
+  validated before it went. It now posts to `POST /api/v1/contact` through
+  `useSubmitContact` and shows the server's own success or error message in
+  the same place the old form showed its own. The endpoint's bounds match
+  `contactSchema`: name ≤ 120, email ≤ 254, subject ≤ 150, message 10–2000 —
+  the message minimum rose from 1 to 10, because "hi" is not an enquiry.
+- **A declined card no longer strands an order.** `payable` is on the order
+  type and the confirmation page keys its "pay now" action off it, so an
+  order whose payment failed offers a way to settle rather than a dead end.
+  The   callback page's failed state used the class `pay-state failed`, which
+  is not the one the stylesheet defines; it is `pay-state fail` now.
+- **`e2e/contact.spec.ts`** submits a real enquiry through the live API and
+  asserts the farm's own thanks appears, and that a message too short to be
+  an enquiry is stopped in the browser. The suite is 22 tests.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

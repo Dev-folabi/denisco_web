@@ -108,6 +108,36 @@ test.describe("on a phone", () => {
       expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
     }
 
+    // A phone is not the only size this table has to survive. Between 761px
+    // and about 1240px the panel is too narrow for the seven columns, and
+    // the actions used to be pushed out of the panel and behind a sideways
+    // scroll that only showed them if you knew to look. The rows become
+    // cards there too, so the same check is made at a tablet width (no
+    // sidebar) and a laptop width (sidebar taking its 270px back).
+    for (const width of [768, 1100]) {
+      await page.setViewportSize({ width, height: 900 });
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(overflow, `the bookings page scrolls sideways at ${width}px`).toBeLessThanOrEqual(1);
+
+      const wrap = page.locator(".table-wrap").first();
+      const wrapBox = (await wrap.boundingBox())!;
+      for (const name of [/Pay Fee/i, /Cancel/i]) {
+        const button = row.getByRole("button", { name });
+        await expect(button).toBeVisible();
+        const box = (await button.boundingBox())!;
+        // Inside the panel rather than merely on screen: the table scrolls
+        // sideways on its own, so an action past its right edge is out of
+        // reach however wide the window is.
+        expect(box.x, `${name} at ${width}px`).toBeGreaterThanOrEqual(wrapBox.x - 1);
+        expect(box.x + box.width, `${name} at ${width}px`).toBeLessThanOrEqual(
+          wrapBox.x + wrapBox.width + 1,
+        );
+      }
+    }
+
     // Give the slot back, so re-runs do not fill the farm's calendar.
     await row.getByRole("button", { name: /Cancel/i }).click();
     await expect(page.getByText(/time released/i)).toBeVisible({

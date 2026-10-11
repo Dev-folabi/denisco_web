@@ -150,7 +150,7 @@ export function PaymentCallbackContent({ reference }: { reference?: string }) {
           )}
 
           {state === "failed" && (
-            <div className="pay-state failed">
+            <div className="pay-state fail">
               <XCircle size={58} className="pay-icon block" />
               <h3>Payment Not Confirmed</h3>
               <p className="muted">

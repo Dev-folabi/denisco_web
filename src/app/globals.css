@@ -1256,10 +1256,13 @@ tbody tr:hover {
    amounts but not for a consultation's name: "Livestock (Ruminant)
    Management Consultation" on one line is wider than the dashboard's content
    column has to spare, and it pushed the row's action out of sight behind a
-   sideways scroll. This column wraps instead. */
+   sideways scroll. This column wraps instead, and the width it is given is
+   what sets the whole table's minimum: seven columns have to add up to under
+   the 800px at which the container query in RESPONSIVE — account tables
+   become cards turns the rows into cards, or the cards would never appear. */
 .account-table td[data-label="Consultation"] {
   white-space: normal;
-  min-width: 160px;
+  min-width: 140px;
 }
 
 /* A status pill with its amount beside it, so the fee needs no column of its
@@ -2466,7 +2469,97 @@ dialog::backdrop {
 }
 
 /* ============================================================
-   RESPONSIVE — stacked account tables (prototype lines 548-551)
+   RESPONSIVE — account tables become cards
+   ============================================================
+   An account table stops fitting its panel at about 790px: references,
+   consultation names, dates, times, the payment pill with the fee beside
+   it, the status pill and two row actions add up to more than that, and
+   once they do the action column is pushed out of the panel and behind a
+   sideways scroll nobody can see. Past that width each row becomes a card
+   instead, labelled by data-label, exactly as the prototype does for a
+   phone (prototype lines 548-551).
+
+   The width being tested is the panel's, not the window's, and the
+   difference matters. At a 1024px window the sidebar has stacked below the
+   content and the table has about 920px to itself; at 1025px the sidebar is
+   back and it has about 619px. A breakpoint on the window cannot tell those
+   two apart, so one value or the other leaves half the range broken.
+
+   800px is a little over the table's own minimum, so the cards appear only
+   where the columns genuinely do not fit, at every window width.
+   ============================================================ */
+.dash-shell .panel {
+  container-type: inline-size;
+}
+
+@container (max-width: 800px) {
+  .dash-shell .panel .table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .dash-shell .panel .account-table {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .dash-shell .panel .account-table thead {
+    display: none;
+  }
+
+  .dash-shell .panel .account-table,
+  .dash-shell .panel .account-table tbody,
+  .dash-shell .panel .account-table tr,
+  .dash-shell .panel .account-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .dash-shell .panel .account-table tr {
+    padding: 10px 13px;
+    margin-bottom: 11px;
+    border: 1px solid var(--color-line);
+    border-radius: 13px;
+    background: var(--color-cream);
+  }
+
+  .dash-shell .panel .account-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--color-line);
+    white-space: normal;
+    text-align: right;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .dash-shell .panel .account-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .dash-shell .panel .account-table td::before {
+    content: attr(data-label);
+    flex: 0 0 41%;
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .dash-shell .panel .account-table td[data-label="Action"] a {
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — small screens (prototype lines 548-551)
    ============================================================ */
 @media (max-width: 760px) {
   .dash-shell > div:last-child {
@@ -2490,28 +2583,23 @@ dialog::backdrop {
     align-self: flex-start;
   }
 
-  .dash-shell .table-wrap,
+  /* The order detail's items table keeps its own rule: it lives in a card
+     rather than a panel, so the container query above does not see it. */
   .order-detail-card .table-wrap {
     overflow: visible;
     border: 0;
     border-radius: 0;
   }
 
-  .dash-shell .account-table,
   .responsive-stack-table {
     width: 100%;
     min-width: 0;
   }
 
-  .dash-shell .account-table thead,
   .responsive-stack-table thead {
     display: none;
   }
 
-  .dash-shell .account-table,
-  .dash-shell .account-table tbody,
-  .dash-shell .account-table tr,
-  .dash-shell .account-table td,
   .responsive-stack-table,
   .responsive-stack-table tbody,
   .responsive-stack-table tr,
@@ -2520,7 +2608,6 @@ dialog::backdrop {
     width: 100%;
   }
 
-  .dash-shell .account-table tr,
   .responsive-stack-table tr {
     padding: 10px 13px;
     margin-bottom: 11px;
@@ -2529,7 +2616,6 @@ dialog::backdrop {
     background: var(--color-cream);
   }
 
-  .dash-shell .account-table td,
   .responsive-stack-table td {
     display: flex;
     align-items: center;
@@ -2543,12 +2629,10 @@ dialog::backdrop {
     overflow-wrap: anywhere;
   }
 
-  .dash-shell .account-table td:last-child,
   .responsive-stack-table td:last-child {
     border-bottom: 0;
   }
 
-  .dash-shell .account-table td::before,
   .responsive-stack-table td::before {
     content: attr(data-label);
     flex: 0 0 41%;
@@ -2558,11 +2642,6 @@ dialog::backdrop {
     letter-spacing: 0.45px;
     text-transform: uppercase;
     color: var(--color-muted);
-  }
-
-  .dash-shell .account-table td[data-label="Action"] a {
-    width: auto;
-    margin-left: auto;
   }
 
   .dash-shell .stat-cards {
@@ -2587,12 +2666,14 @@ dialog::backdrop {
     grid-template-columns: 1fr;
   }
 
-  .dash-shell .account-table td,
+  /* Matched to the specificity of the container query above, which is what
+     lays these cells out; anything shorter loses the cascade. */
+  .dash-shell .panel .account-table td,
   .responsive-stack-table td {
     gap: 8px;
   }
 
-  .dash-shell .account-table td::before,
+  .dash-shell .panel .account-table td::before,
   .responsive-stack-table td::before {
     flex-basis: 38%;
   }

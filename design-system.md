@@ -599,15 +599,20 @@ All prototype breakpoints, in cascade order (later rules win):
 | **1240px** | Header nav becomes off-canvas right panel; header search hidden; header main row `justify-content: space-between`; off-canvas link refinements (rounded 12px, cream-deep hover, "Explore Denisco" panel head, scrim) |
 | **1024px** | `.hero-inner`, `.ceo-section`, `.split`, `.pd-grid`, `.cart-layout`, `.video-two-col`, `.contact-grid`, `.policy-layout` → single column; `.grid-3`/`.grid-4`/`.stat-cards`/`.service-detail-grid`/`.policy-nav` → 2 columns; `.hero-media img` → 340px; `.dash-shell` → single column (sidebar `order:2`, content `order:1`) |
 | **860px** | Footer grid → `1fr 1fr` |
-| **760px** | Hero/pd-grid/cart-layout/contact-grid stack; hero image → 300px, hero h1 → `clamp(30px,10vw,40px)`, hero badge max-width + compact padding; page-hero padding 54px; nav panel becomes floating card (inset 8px, radius 24, border); cart row → `64px minmax(0,1fr)` with `nth-child(n+3)` reflow to column 2; `.dash-side` hidden + `.account-mobile-nav` fixed bottom bar; **account tables stack**: `thead` hidden, rows become cards, each `td` shows `data-label` (`::before`) left, value right, dotted separators; toast max-width → none |
+| **760px** | Hero/pd-grid/cart-layout/contact-grid stack; hero image → 300px, hero h1 → `clamp(30px,10vw,40px)`, hero badge max-width + compact padding; page-hero padding 54px; nav panel becomes floating card (inset 8px, radius 24, border); cart row → `64px minmax(0,1fr)` with `nth-child(n+3)` reflow to column 2; `.dash-side` hidden + `.account-mobile-nav` fixed bottom bar; toast max-width → none |
 | **640px** | Container side padding → 18px; `.section` padding → 64px; `.section-head h2` → 31px; hero badge → `left:0; bottom:-16px`; all `.grid-2/3/4` → 1 column; header actions compact (actions gap 7px, `.icon-btn` → 40px, account btn → 42px circle icon-only, label span hidden); footer grid → 1 column; cart row → `56px 1fr` + `row-gap:10px`; `.stat-cards` → `repeat(2, minmax(0,1fr))`; `.panel-head > div` → full width; form rows stack; slot grid → 2 columns |
 | **480px** | Booking date buttons compact (70px basis) |
 | **420px** | Account stat cards → 1 column; stacked `td` gap 8px, label basis 38%; order-detail-card padding 15px |
 | **390px** | Header: padding 10px 12px, brand text hidden, action gap 5px, buttons 38px; `.section-head h2` → 28px; stat cards → 1 column; service-row padding 24px; policy intro/promise padding 20px 16px |
 
-### Stacked tables (≤760px)
+### Stacked tables
 
-Tables inside `.dash-shell` (`.account-table`) and `.order-detail-card .table-wrap` (`.responsive-stack-table`) stack via `data-label` on every `<td>` — the `data-label` value is the prototype's own (often shorter than the `<th>`, e.g. `Order` for "Order No.", `Unit price` for "Unit Price", `Consultation` for "Type"). Keep labels verbatim from the prototype.
+Both kinds stack the same way — `thead` hidden, each row a card, each `td` showing its `data-label` (`::before`) left and its value right with dotted separators — but they decide when by different measures:
+
+- **`.account-table`** (bookings, orders, transactions, the dashboard's recent orders) stacks when the **panel it sits in** is under 800px: `.dash-shell .panel` carries `container-type: inline-size` and the rules live in `@container (max-width: 800px)`. Not a media query, because the same window is not the same space for the table — at a 1024px window the sidebar has stacked below the content and the table has ~920px to itself, at 1025px the sidebar is back and it has ~619px. Seven columns (reference, name, date, time, payment pill + fee, status pill, two row actions) need ~790px, so 800px is the point past which the action column would be pushed out of the panel and behind a sideways scroll. That is also why `.account-table td[data-label="Consultation"]` has a 140px `min-width`: it is the column that sets the table's minimum, and the minimum has to stay under the container's.
+- **`.order-detail-card .table-wrap` (`.responsive-stack-table`)** keeps the prototype's `@media (max-width: 760px)`. Its four columns fit anywhere, so a viewport breakpoint is enough.
+
+The `data-label` value is the prototype's own (often shorter than the `<th>`, e.g. `Order` for "Order No.", `Unit price` for "Unit Price", `Consultation` for "Type"). Keep labels verbatim from the prototype. The stacked rules are written at `.dash-shell .panel .account-table` specificity, so anything restyling a stacked cell (the 420px `gap` and label basis) has to match it or it loses the cascade.
 
 ### In Tailwind
 
