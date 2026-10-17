@@ -80,6 +80,12 @@ export function OrderDetailCard({ order }: OrderDetailCardProps) {
           <h4>Delivery Information</h4>
           <p className="muted text-[13.5px]">
             Method: {isDelivery ? "Home Delivery" : "Farm Pickup"}
+            {isDelivery && order.delivery_location_name ? (
+              <>
+                <br />
+                Area: {order.delivery_location_name}
+              </>
+            ) : null}
             {isDelivery && order.address ? (
               <>
                 <br />

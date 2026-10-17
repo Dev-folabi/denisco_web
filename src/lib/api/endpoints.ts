@@ -18,6 +18,9 @@ export const API = {
   categories: {
     list: "/api/v1/categories",
   },
+  delivery: {
+    offering: "/api/v1/delivery",
+  },
   contact: {
     submit: "/api/v1/contact",
   },

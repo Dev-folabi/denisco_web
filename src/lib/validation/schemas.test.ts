@@ -157,6 +157,33 @@ describe("checkoutSchema", () => {
     }
   });
 
+  it("requires a delivery area for home delivery", () => {
+    // The fee is read from the chosen area server-side, so checkout cannot
+    // proceed without one — even with the address filled in.
+    const parsed = checkoutSchema.safeParse({
+      ...contact,
+      delivery_method: "delivery",
+      address: "3 Martin Luther King Street, Gwarimpa, Abuja",
+      location_id: "",
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(firstIssue(parsed.error)).toBe("Please choose a delivery area");
+    }
+  });
+
+  it("accepts delivery with an address and an area", () => {
+    expect(
+      checkoutSchema.safeParse({
+        ...contact,
+        delivery_method: "delivery",
+        address: "3 Martin Luther King Street, Gwarimpa, Abuja",
+        location_id: "6ac4f447f8e6fb7ab1cef6d3",
+      }).success,
+    ).toBe(true);
+  });
+
   it("does not require an address for farm pickup", () => {
     const parsed = checkoutSchema.safeParse({
       ...contact,

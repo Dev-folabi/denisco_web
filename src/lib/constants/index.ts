@@ -132,7 +132,8 @@ export const SITE = {
     quote:
       "We are committed to a farm where soil remains productive, animals are cared for, food is produced responsibly, people grow in knowledge and communities benefit.",
   },
-  deliveryFee: 2500,
+  // Home delivery is priced per area, read from the API at checkout — the
+  // prototype's flat ₦2,500 is superseded by admin-managed locations.
   currency: "NGN",
   categories: [
     { slug: "poultry", label: "Poultry" },

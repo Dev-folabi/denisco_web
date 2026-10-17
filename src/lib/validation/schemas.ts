@@ -98,13 +98,28 @@ export const checkoutSchema = z
     phone,
     delivery_method: z.enum(["delivery", "pickup"]),
     address: trimmed.max(500, "Address must be 500 characters or fewer"),
+    // Defaulted rather than required: farm pickup never sends one, and a
+    // caller that omits the field should reach the same rule as one that
+    // sends it empty.
+    location_id: trimmed.default(""),
   })
   .superRefine((values, ctx) => {
-    if (values.delivery_method === "delivery" && values.address.length === 0) {
+    if (values.delivery_method !== "delivery") return;
+
+    if (values.address.length === 0) {
       ctx.addIssue({
         code: "custom",
         path: ["address"],
         message: "Please enter a delivery address",
+      });
+    }
+    // The fee is read from the chosen area server-side, so checkout cannot
+    // proceed without one.
+    if (values.location_id.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["location_id"],
+        message: "Please choose a delivery area",
       });
     }
   });

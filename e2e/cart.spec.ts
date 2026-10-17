@@ -45,8 +45,12 @@ test.describe("product detail and cart", () => {
     await expect(page.getByLabel("Full Name")).not.toHaveValue("");
     await expect(page.getByLabel("Email Address")).not.toHaveValue("");
 
-    // Home delivery is selected by default and carries the ₦2,500 fee.
-    await expect(page.getByText("₦2,500").first()).toBeVisible();
+    // The delivery-method cards are offered. Farm Pickup is always there;
+    // Home Delivery appears only while the farm has an active delivery area,
+    // so the suite asserts the option that is on offer in every state rather
+    // than a fee that is now per-area.
+    await expect(page.getByText(/Farm Pickup/i)).toBeVisible();
+    await expect(page.getByText(/Delivery Method|Delivery Area/i).first()).toBeVisible();
   });
 
   test("removing the last item leaves the empty state", async ({ page }) => {

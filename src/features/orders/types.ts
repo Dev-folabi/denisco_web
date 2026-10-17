@@ -34,6 +34,12 @@ export interface Order {
   currency: string;
   delivery_method: "delivery" | "pickup";
   address?: string;
+  /**
+   * The delivery area the order was sent to, kept as a snapshot so a later
+   * rename or removal does not rewrite history. Empty for farm pickup and
+   * for orders placed before areas existed.
+   */
+  delivery_location_name?: string;
   status: OrderStatus;
   payment_status: OrderPaymentStatus;
   payment_ref?: string;
@@ -66,4 +72,9 @@ export interface CheckoutInput {
   phone: string;
   delivery_method: "delivery" | "pickup";
   address?: string;
+  /**
+   * The delivery area, required for home delivery. The fee is read from it
+   * server-side; a retired or unknown id is rejected.
+   */
+  location_id?: string;
 }

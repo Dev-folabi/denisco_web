@@ -8,13 +8,13 @@ import { useAuth } from "@/lib/auth/auth-provider";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MoneyFromKobo } from "@/lib/utils/format";
-import { SITE } from "@/lib/constants";
 import { useToast } from "@/components/ui/toast";
 import { ApiRequestError } from "@/lib/api/client";
 import { checkoutSchema, firstIssue } from "@/lib/validation/schemas";
 import { useCart } from "@/features/cart/hooks";
 import { useCreateOrder } from "@/features/orders/hooks";
 import { useInitializePayment } from "@/features/payments/hooks";
+import { useDeliveryOffering } from "@/features/delivery/hooks";
 
 export default function CheckoutPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
 
   const { data: cart, isPending: cartPending } = useCart();
+  const { data: offering } = useDeliveryOffering();
   const createOrder = useCreateOrder();
   const initializePayment = useInitializePayment();
 
@@ -29,6 +30,7 @@ export default function CheckoutPage() {
     "delivery",
   );
   const [address, setAddress] = useState("");
+  const [locationId, setLocationId] = useState("");
   const [error, setError] = useState("");
 
   // The contact fields show the account's details until the customer edits
@@ -57,8 +59,22 @@ export default function CheckoutPage() {
 
   const items = cart?.items ?? [];
   const subtotal = cart?.subtotal ?? 0;
-  const deliveryFee =
-    deliveryMethod === "delivery" ? SITE.deliveryFee * 100 : 0;
+
+  // Home delivery is only on offer while the farm has it switched on and at
+  // least one area is active. Delivery is the prototype's default choice, so
+  // before the offering resolves the form holds that choice; once it resolves
+  // without delivery, the effective method is pickup — the controls and the
+  // fee follow this derived value rather than the raw state, so a customer is
+  // never left on a method whose controls are hidden.
+  const deliveryOnOffer = Boolean(offering?.enabled && offering.locations.length > 0);
+  const locations = offering?.locations ?? [];
+  const selectedLocation = locations.find((area) => area.id === locationId);
+  const method: "delivery" | "pickup" =
+    deliveryMethod === "delivery" && offering !== undefined && !deliveryOnOffer
+      ? "pickup"
+      : deliveryMethod;
+
+  const deliveryFee = method === "delivery" ? (selectedLocation?.fee ?? 0) : 0;
   const total = subtotal + deliveryFee;
 
   const submitting = createOrder.isPending || initializePayment.isPending;
@@ -77,8 +93,9 @@ export default function CheckoutPage() {
       name,
       email,
       phone,
-      delivery_method: deliveryMethod,
+      delivery_method: method,
       address,
+      location_id: locationId,
     });
 
     if (!parsed.success) {
@@ -95,6 +112,10 @@ export default function CheckoutPage() {
         address:
           parsed.data.delivery_method === "delivery"
             ? parsed.data.address
+            : undefined,
+        location_id:
+          parsed.data.delivery_method === "delivery"
+            ? parsed.data.location_id
             : undefined,
       });
 
@@ -224,6 +245,7 @@ export default function CheckoutPage() {
               <div className="form-group">
                 <label htmlFor="co-phone">Phone Number</label>
                 <input
+                  type="tel"
                   className="form-control"
                   id="co-phone"
                   required
@@ -235,51 +257,72 @@ export default function CheckoutPage() {
 
             <fieldset>
               <legend>02 · Delivery Method</legend>
+              {deliveryOnOffer && (
+                <label
+                  className={`radio-card ${
+                    method === "delivery" ? "selected" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-method"
+                    value="delivery"
+                    checked={method === "delivery"}
+                    onChange={() => setDeliveryMethod("delivery")}
+                  />{" "}
+                  Home Delivery
+                </label>
+              )}
               <label
                 className={`radio-card ${
-                  deliveryMethod === "delivery" ? "selected" : ""
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="delivery-method"
-                  value="delivery"
-                  checked={deliveryMethod === "delivery"}
-                  onChange={() => setDeliveryMethod("delivery")}
-                />{" "}
-                Home Delivery (₦2,500 flat fee within Abuja)
-              </label>
-              <label
-                className={`radio-card ${
-                  deliveryMethod === "pickup" ? "selected" : ""
+                  method === "pickup" ? "selected" : ""
                 }`}
               >
                 <input
                   type="radio"
                   name="delivery-method"
                   value="pickup"
-                  checked={deliveryMethod === "pickup"}
+                  checked={method === "pickup"}
                   onChange={() => setDeliveryMethod("pickup")}
                 />{" "}
                 Farm Pickup (Free)
               </label>
-              <div
-                className="form-group"
-                id="address-group"
-                style={{
-                  display: deliveryMethod === "pickup" ? "none" : "block",
-                }}
-              >
-                <label htmlFor="co-address">Delivery Address</label>
-                <textarea
-                  className="form-control"
-                  id="co-address"
-                  rows={2}
-                  placeholder="Enter your delivery address"
-                  value={address}
-                  onChange={(event) => setAddress(event.target.value)}
-                />
-              </div>
+
+              {method === "delivery" && (
+                <>
+                  <div className="form-group" style={{ marginTop: "1rem" }}>
+                    <label>Delivery Area</label>
+                    {locations.map((area) => (
+                      <label
+                        key={area.id}
+                        className={`radio-card ${
+                          locationId === area.id ? "selected" : ""
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="delivery-location"
+                          value={area.id}
+                          checked={locationId === area.id}
+                          onChange={() => setLocationId(area.id)}
+                        />{" "}
+                        {area.name} — {MoneyFromKobo(area.fee)}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="co-address">Delivery Address</label>
+                    <textarea
+                      className="form-control"
+                      id="co-address"
+                      rows={2}
+                      placeholder="Enter your delivery address"
+                      value={address}
+                      onChange={(event) => setAddress(event.target.value)}
+                    />
+                  </div>
+                </>
+              )}
             </fieldset>
           </form>
 
@@ -300,7 +343,11 @@ export default function CheckoutPage() {
             ctaLabel={submitting ? "Placing Order…" : "Place Order"}
             ctaIcon={<Lock size={14} />}
             onCtaClick={placeOrder}
-            disabled={submitting || cart?.has_unavailable_items}
+            disabled={
+              submitting ||
+              cart?.has_unavailable_items ||
+              (method === "delivery" && !locationId)
+            }
           />
         </div>
       </div>
