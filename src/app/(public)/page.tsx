@@ -1,12 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHead } from "@/components/layout/section-head";
-import {
-  FEATURED_LIMIT,
-  FeaturedProducts,
-} from "@/components/product/featured-products";
+import { FeaturedProducts } from "@/components/product/featured-products";
 import { ServiceIcon } from "@/components/services/service-icon";
-import { SITE } from "@/lib/constants";
+import { FEATURED_LIMIT, SITE } from "@/lib/constants";
 import { fetchProducts } from "@/lib/api/server";
 import { Sprout, Leaf, Users, Check } from "lucide-react";
 

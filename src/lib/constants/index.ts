@@ -7,6 +7,15 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000"
 ).replace(/\/$/, "");
 
+/**
+ * How many products the home page's featured grid shows. It lives here rather
+ * than in the grid's own component because the home page reads it on the
+ * server: a constant exported from a "use client" module is a throwing stub
+ * by the time server code sees it, which sent the stringified stub as the
+ * API's limit and left the products out of the server-rendered HTML.
+ */
+export const FEATURED_LIMIT = 4;
+
 export const SITE = {
   company: {
     name: "DENISCO GLOBAL AGRICULTURE LIMITED",

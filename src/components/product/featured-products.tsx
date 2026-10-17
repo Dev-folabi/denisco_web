@@ -4,9 +4,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { useProducts } from "@/features/products/hooks";
 import type { Product } from "@/features/products/types";
 import { useAddToCartAction } from "@/features/cart/use-add-to-cart";
-
-/** How many products the home page's featured grid shows. */
-export const FEATURED_LIMIT = 4;
+import { FEATURED_LIMIT } from "@/lib/constants";
 
 /**
  * The home page's featured grid.
