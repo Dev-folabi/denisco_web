@@ -41,11 +41,11 @@ export const SITE = {
     ],
   },
   media: {
-    logo: "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/Company%20logo.jpeg",
+    logo: "https://ik.imagekit.io/uuki5lt6d/denisco/Company_logo.jpeg",
     ceoPhoto1:
-      "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/CEO_IMAGE_1.jpeg",
+      "https://ik.imagekit.io/uuki5lt6d/denisco/CEO_IMAGE_1.jpeg",
     ceoPhoto2:
-      "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/CEO_IMAGE_2.jpeg",
+      "https://ik.imagekit.io/uuki5lt6d/denisco/CEO_IMAGE_2.jpeg",
     /**
      * Video posters go through ImageKit's own transformations rather than
      * next/image: they are the `poster` attribute of a <video>, which the
@@ -58,23 +58,23 @@ export const SITE = {
         label: "Farm Introduction",
         description:
           "A walk-through of our integrated farm divisions, presented by our CEO.",
-        src: "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/FARM_INTRO.mp4",
+        src: "https://ik.imagekit.io/uuki5lt6d/denisco/FARM_INTRO.mp4",
         poster:
-          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid1_tumb.png?tr=w-900,q-70,f-auto",
+          "https://ik.imagekit.io/uuki5lt6d/denisco/vid1_tumb.png?tr=w-900,q-70,f-auto",
       },
       agriculturalEducation: {
         title: "Agricultural Education by the CEO",
         label: "Agricultural Education",
         description:
           "Practical agricultural education for farmers and aspiring farm owners.",
-        src: "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/agricultural_education.mp4",
+        src: "https://ik.imagekit.io/uuki5lt6d/denisco/agricultural_education.mp4",
         poster:
-          "https://ik.imagekit.io/a8q3rfdl1/DENISCO%20FARM%20MEDIA/vid2_tumb.png?tr=w-900,q-70,f-auto",
+          "https://ik.imagekit.io/uuki5lt6d/denisco/vid2_tumb.png?tr=w-900,q-70,f-auto",
       },
     },
-    heroImage: "/images/hero-crop-field.jpg",
-    farmland: "/images/rice-paddy.jpg",
-    workers: "/images/local-chickens.png",
+    heroImage: "https://ik.imagekit.io/uuki5lt6d/denisco/products/IMG-20261009-WA9762.jpg_4Ww2EmRSO.jpeg",
+    farmland: "https://ik.imagekit.io/uuki5lt6d/denisco/farmland.jpg",
+    workers: "https://ik.imagekit.io/uuki5lt6d/denisco/worker.jpg",
     productFallback: "/images/hero-crop-field.jpg",
   },
   socials: [
