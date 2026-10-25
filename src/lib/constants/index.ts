@@ -26,6 +26,7 @@ export const SITE = {
     address:
       "3 Martin Luther King Street, 5th Avenue, Gwarimpa, Abuja, Nigeria",
     phone: "+234 808 627 3838",
+    whatsapp: "+234 803 786 6623",
     email: "info@deniscoglobalagroltd.com",
     hours: "Mon to Sat: 8:00 AM to 6:00 PM",
     integratedFlow: [
@@ -35,17 +36,28 @@ export const SITE = {
       "Livestock",
       "Poultry",
       "Snails",
+      "Spices",
       "Processing",
       "Value Addition",
       "Market",
     ],
   },
   media: {
-    logo: "https://ik.imagekit.io/uuki5lt6d/denisco/Company_logo.jpeg",
+    logo: "/images/Company_logo.jpeg",
+    // Rotating hero background slides, served from public/images.
+    heroSlides: [
+      "/images/slide1.jpeg",
+      "/images/slide2.jpeg",
+      "/images/slide3.jpeg",
+      "/images/slide4.jpeg",
+      "/images/slide5.jpeg",
+    ],
+    // About-page Company Overview image (replaces the old ImageKit "workers").
+    aboutOverview: "/images/slide3.jpeg",
     ceoPhoto1:
       "https://ik.imagekit.io/uuki5lt6d/denisco/CEO_IMAGE_1.jpeg",
     ceoPhoto2:
-      "https://ik.imagekit.io/uuki5lt6d/denisco/CEO_IMAGE_2.jpeg",
+      "https://ik.imagekit.io/uuki5lt6d/denisco/CEO_IMAGE_1.jpeg",
     /**
      * Video posters go through ImageKit's own transformations rather than
      * next/image: they are the `poster` attribute of a <video>, which the
@@ -78,10 +90,10 @@ export const SITE = {
     productFallback: "/images/hero-crop-field.jpg",
   },
   socials: [
-    { label: "Facebook", url: "#", icon: "facebook" },
-    { label: "Instagram", url: "#", icon: "instagram" },
+    { label: "Facebook", url: "https://www.facebook.com/share/14qLHjRfa6r", icon: "facebook" },
+    { label: "Instagram", url: "https://www.instagram.com/deniscofoods", icon: "instagram" },
     { label: "X (Twitter)", url: "#", icon: "twitter" },
-    { label: "WhatsApp", url: "#", icon: "whatsapp" },
+    { label: "WhatsApp", url: "https://wa.me/+2348037866623", icon: "whatsapp" },
   ],
   about: {
     vision:
@@ -126,7 +138,7 @@ export const SITE = {
     ],
   },
   ceo: {
-    name: "Uzochukwu, Chukwudi Paulinus Prince",
+    name: "Paulinus Chukwudi Prince",
     title: "Chief Executive Officer",
     hero_quote: "Our commitment is to grow with nature, produce carefully, care for our animals and equip the next generation of farmers.",
     quote:
@@ -138,9 +150,10 @@ export const SITE = {
   categories: [
     { slug: "poultry", label: "Poultry" },
     { slug: "livestock", label: "Livestock" },
-    { slug: "piggery", label: "Piggery" },
-    { slug: "snail", label: "Snail Farming" },
+    { slug: "piggery", label: "Pig & Micro-Livestock" },
     { slug: "crops", label: "Crop Farming" },
+    { slug: "snail", label: "Snail Farming" },
+    { slug: "spices", label: "Spices & Nutrition" },
   ],
   services: [
     {
@@ -285,6 +298,42 @@ export const SITE = {
         "Processing and preservation",
         "Packaging and product development",
         "Market preparation and by-product use",
+      ],
+    },
+    {
+      title: "Spice Production and Processing",
+      icon: "Flame",
+      description:
+        "Cultivation, drying and processing of quality spices into clean, flavourful blends under our AROMACRAFT and ROYAL LUSH ranges.",
+      items: [
+        "Sourcing and cultivation of quality spices",
+        "Cleaning, drying and grinding",
+        "Blending to consistent recipes",
+        "Quality and hygiene control",
+      ],
+    },
+    {
+      title: "Spice Blending and Packaging",
+      icon: "Package",
+      description:
+        "Signature spice blends packaged for the kitchen and the market, from pepper soup spice to suya yaji.",
+      items: [
+        "Recipe development and blending",
+        "100g retail packaging and labelling",
+        "Batch tracking and shelf-life care",
+        "Wholesale and retail supply",
+      ],
+    },
+    {
+      title: "Nutrition and Food Supplements",
+      icon: "Salad",
+      description:
+        "Nutritious food products and dietary support that turn farm produce into everyday wellness.",
+      items: [
+        "Nutrient-rich food products",
+        "Dietary and wellness guidance",
+        "Natural ingredient sourcing",
+        "Value-added nutrition products",
       ],
     },
   ],

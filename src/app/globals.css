@@ -402,6 +402,40 @@ textarea {
 /* --- Hero / split (prototype lines 138-162) --- */
 .hero {
   padding: 70px 0 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cross-fading photographic background behind the hero content. */
+.hero-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+/* A cream wash, heaviest on the left where the copy sits, so the dark hero
+   text stays legible over the photos. */
+.hero-slideshow-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(250, 246, 236, 0.86) 0%,
+    rgba(250, 246, 236, 0.74) 40%,
+    rgba(250, 246, 236, 0.42) 72%,
+    rgba(250, 246, 236, 0.28) 100%
+  );
 }
 
 .hero-inner {
@@ -409,6 +443,33 @@ textarea {
   grid-template-columns: 1.05fr 0.95fr;
   gap: 60px;
   align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fade each featured card in when the rotating pick remounts it. */
+@keyframes featured-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featured-rotator-slot {
+  animation: featured-fade-in 0.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    transition: none;
+  }
+  .featured-rotator-slot {
+    animation: none;
+  }
 }
 
 .hero-copy h1 {

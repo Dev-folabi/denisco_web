@@ -104,6 +104,7 @@ export function SiteFooter() {
             { label: "Piggery", href: "/shop?category=piggery" },
             { label: "Snail Farming", href: "/shop?category=snail" },
             { label: "Crop Farming", href: "/shop?category=crops" },
+            { label: "Spices Farming", href: "/shop?category=spices" },
           ].map((link) => (
             <Link
               key={link.href}
@@ -126,7 +127,7 @@ export function SiteFooter() {
           </p>
           <p className="text-[13.5px] text-[#a9c69d]">
             <Phone size={13.5} className="mr-1 inline-block" />{" "}
-            {SITE.company.phone}
+            {SITE.company.phone}, {SITE.company.whatsapp}
           </p>
           <p className="text-[13.5px] text-[#a9c69d]">
             <Mail size={13.5} className="mr-1 inline-block" />{" "}

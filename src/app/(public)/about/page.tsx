@@ -56,7 +56,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        title={`About ${SITE.company.name}`}
+        title={SITE.company.name}
         description={SITE.company.tagline}
         breadcrumbs={[
           { label: "Home", href: "/" },
@@ -87,10 +87,11 @@ export default function AboutPage() {
           </div>
           <div className="img-blob">
             <Image
-              src={SITE.media.workers}
-              alt="Denisco farm operations"
+              src={SITE.media.aboutOverview}
+              alt="Integrated farmland at Denisco Global Agriculture Limited"
               width={600}
               height={400}
+              sizes="(max-width: 760px) 100vw, 600px"
             />
           </div>
         </div>

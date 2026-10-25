@@ -11,6 +11,9 @@ import {
   MessageCircle,
   Presentation,
   PackageOpen,
+  Flame,
+  Package,
+  Salad,
 } from "lucide-react";
 
 const SERVICE_ICONS: Record<string, React.ElementType> = {
@@ -26,6 +29,9 @@ const SERVICE_ICONS: Record<string, React.ElementType> = {
   "Agricultural Consulting": MessageCircle,
   "Agricultural Training and Capacity Development": Presentation,
   "Agricultural Value Addition": PackageOpen,
+  "Spice Production and Processing": Flame,
+  "Spice Blending and Packaging": Package,
+  "Nutrition and Food Supplements": Salad,
 };
 
 interface ServiceIconProps {

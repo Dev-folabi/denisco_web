@@ -2,8 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { SectionHead } from "@/components/layout/section-head";
 import { FeaturedProducts } from "@/components/product/featured-products";
+import { HeroSlideshow } from "@/components/layout/hero-slideshow";
 import { ServiceIcon } from "@/components/services/service-icon";
-import { FEATURED_LIMIT, SITE } from "@/lib/constants";
+import { SITE } from "@/lib/constants";
 import { fetchProducts } from "@/lib/api/server";
 import { Sprout, Leaf, Users, Check } from "lucide-react";
 
@@ -21,9 +22,11 @@ const WHO_WE_ARE_POINTS = [
 ];
 
 export default async function HomePage() {
+  // The featured grid shows one random product per category and rotates every
+  // five seconds, so it needs the whole catalogue rather than the featured
+  // flag. The server copy seeds the grid; the client refetches on mount.
   const featured = await fetchProducts({
-    featured: true,
-    limit: FEATURED_LIMIT,
+    limit: 100,
   });
 
   const services = SITE.services.slice(0, 4);
@@ -36,6 +39,7 @@ export default async function HomePage() {
     <>
       {/* ===== HERO ===== */}
       <section className="hero">
+        <HeroSlideshow />
         <div className="container hero-inner">
           <div className="hero-copy">
             <span className="eyebrow">Integrated Agriculture</span>
