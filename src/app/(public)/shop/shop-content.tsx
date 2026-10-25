@@ -19,6 +19,47 @@ const SORT_OPTIONS = [
   { value: "name", label: "Name: A-Z" },
 ];
 
+// Within the Spices & Nutrition category the shop shows two titled sections,
+// one per brand range. The brand is read from the product name's prefix, since
+// the product model carries no brand field.
+const SPICE_BRANDS = [
+  { prefix: "AROMACRAFT", title: "AROMACRAFT (100g)" },
+  { prefix: "ROYAL LUSH", title: "ROYAL LUSH (100g)" },
+];
+
+interface ProductSection {
+  title: string | null;
+  items: Product[];
+}
+
+/** Splits the Spices & Nutrition category into its two brand sections; every
+ *  other view is a single untitled section. */
+function buildSections(
+  category: string,
+  products: Product[],
+): ProductSection[] {
+  if (category !== "spices") {
+    return [{ title: null, items: products }];
+  }
+
+  const matched = new Set<string>();
+  const sections: ProductSection[] = SPICE_BRANDS.map((brand) => {
+    const items = products.filter((product) => {
+      const hit = product.name.toUpperCase().startsWith(brand.prefix);
+      if (hit) matched.add(product.id);
+      return hit;
+    });
+    return { title: brand.title, items };
+  });
+
+  const rest = products.filter((product) => !matched.has(product.id));
+  if (rest.length) {
+    sections.push({ title: "More Spices & Nutrition", items: rest });
+  }
+
+  return sections.filter((section) => section.items.length > 0);
+}
+
 interface ShopContentProps {
   initialSearch?: string;
   initialCategory?: string;
@@ -128,32 +169,39 @@ export function ShopContent({
                 Retry
               </Button>
             </div>
-          ) : (
-            <ProductGrid id="shop-grid">
-              {products.length ? (
-                products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={(item) =>
-                      addToCart(item.id, 1, item.name)
-                    }
-                  />
-                ))
-              ) : (
-                <div className="empty-state">
-                  <ShoppingBasket size={48} className="empty-icon" />
-                  <h3>No products found</h3>
-                  <p>
-                    Try adjusting your search or filters to find what you are
-                    looking for.
-                  </p>
-                  <Button variant="outline" onClick={clearFilters}>
-                    Clear Filters
-                  </Button>
+          ) : products.length ? (
+            <div id="shop-grid">
+              {buildSections(activeCategory, products).map((section) => (
+                <div key={section.title ?? "all"} className="shop-section">
+                  {section.title && (
+                    <h3 className="shop-section-title">{section.title}</h3>
+                  )}
+                  <ProductGrid>
+                    {section.items.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAddToCart={(item) =>
+                          addToCart(item.id, 1, item.name)
+                        }
+                      />
+                    ))}
+                  </ProductGrid>
                 </div>
-              )}
-            </ProductGrid>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <ShoppingBasket size={48} className="empty-icon" />
+              <h3>No products found</h3>
+              <p>
+                Try adjusting your search or filters to find what you are
+                looking for.
+              </p>
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            </div>
           )}
         </div>
       </section>

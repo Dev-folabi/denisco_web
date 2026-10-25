@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { SectionHead } from "@/components/layout/section-head";
 import { FeaturedProducts } from "@/components/product/featured-products";
-import { HeroSlideshow } from "@/components/layout/hero-slideshow";
+import { HeroSection } from "@/components/layout/hero-section";
 import { ServiceIcon } from "@/components/services/service-icon";
 import { SITE } from "@/lib/constants";
 import { fetchProducts } from "@/lib/api/server";
-import { Sprout, Leaf, Users, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 // The featured products are read on the server and the page is regenerated
 // every minute, so the grid is in the HTML rather than appearing after a
@@ -38,67 +38,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="hero">
-        <HeroSlideshow />
-        <div className="container hero-inner">
-          <div className="hero-copy">
-            <span className="eyebrow">Integrated Agriculture</span>
-            <h1>
-              Growing with Nature. <mark>Creating Value</mark> for Life.
-            </h1>
-            <p>
-              Denisco Global Agriculture Limited builds sustainable value from
-              seed to harvest through responsible production, practical
-              knowledge and integrated farming.
-            </p>
-            <div className="hero-ctas">
-              <Link href="/shop" className="btn btn-accent">
-                Explore Our Products
-              </Link>
-              <Link href="/consultation" className="btn btn-outline">
-                Book a Consultation
-              </Link>
-            </div>
-            <div className="trust-strip">
-              <div className="trust-item">
-                <Leaf className="trust-icon" size={17} />
-                Sustainable Practices
-              </div>
-              <div className="trust-item">
-                <Sprout className="trust-icon" size={17} />
-                Integrated Agriculture
-              </div>
-              <div className="trust-item">
-                <Users className="trust-icon" size={17} />
-                Practical Training
-              </div>
-            </div>
-          </div>
-          <div className="hero-media">
-            <div className="hero-dots" />
-            <div className="blob-frame">
-              <Image
-                src={SITE.media.heroImage}
-                alt="Integrated farm operations at Denisco Global Agriculture Limited"
-                width={600}
-                height={480}
-                // The frame is at most 600px wide and full-width on a phone;
-                // without this the browser downloads a source sized for the
-                // viewport rather than for the frame.
-                sizes="(max-width: 760px) 100vw, 600px"
-                priority
-              />
-            </div>
-            <div className="hero-badge">
-              <Sprout className="badge-icon" size={24} />
-              <div>
-                <strong>From Seed to Harvest</strong>
-                <span>Creating value across the value chain</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* ===== WHO WE ARE ===== */}
       <section className="section section-white">

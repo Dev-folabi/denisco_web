@@ -400,51 +400,252 @@ textarea {
 }
 
 /* --- Hero / split (prototype lines 138-162) --- */
+/* ============================================================
+   HERO — full-bleed photographic slideshow (redesign 2026-10-25)
+   ============================================================ */
 .hero {
-  padding: 70px 0 100px;
   position: relative;
+  display: flex;
+  align-items: center;
+  min-height: min(90vh, 800px);
+  padding: 96px 0 104px;
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* Cross-fading photographic background behind the hero content. */
-.hero-slideshow {
+/* The five slides, full-bleed, cross-fading with a slow Ken Burns zoom. */
+.hero-bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: -2;
+  background: var(--color-forest-deep);
 }
 
 .hero-slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 1.2s ease-in-out;
+  transform: scale(1.08);
+  transition:
+    opacity 1.4s ease-in-out,
+    transform 7s ease-out;
 }
 
 .hero-slide.active {
   opacity: 1;
+  transform: scale(1);
 }
 
-/* A cream wash, heaviest on the left where the copy sits, so the dark hero
-   text stays legible over the photos. */
-.hero-slideshow-overlay {
+/* A forest scrim — a soft top-to-bottom darkening plus a gentle central
+   vignette — so the centred white copy reads cleanly over any slide, bright
+   or dark, while the photograph stays clearly visible. */
+.hero-scrim {
   position: absolute;
   inset: 0;
+  z-index: -1;
   background: linear-gradient(
-    100deg,
-    rgba(250, 246, 236, 0.86) 0%,
-    rgba(250, 246, 236, 0.74) 40%,
-    rgba(250, 246, 236, 0.42) 72%,
-    rgba(250, 246, 236, 0.28) 100%
+    180deg,
+    rgba(8, 20, 12, 0.52) 0%,
+    rgba(8, 20, 12, 0.3) 30%,
+    rgba(8, 20, 12, 0.34) 68%,
+    rgba(8, 20, 12, 0.62) 100%
   );
 }
 
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 60px;
-  align-items: center;
+.hero-content {
   position: relative;
   z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: clamp(36px, 4vw, 52px) clamp(26px, 4vw, 46px);
+  text-align: center;
+  color: #fff;
+  /* The copy sits on its own frosted-dark panel so every colour — white, the
+     lime accent, the muted lead — keeps a consistent dark surface behind it,
+     whatever the slide shows. The photo still reads around and through it. */
+  background: rgba(10, 26, 16, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
+  color: var(--color-lime);
+  margin-bottom: 24px;
+}
+
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: "";
+  width: 34px;
+  height: 2px;
+  background: var(--color-lime);
+}
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 4.8vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -0.5px;
+  margin-bottom: 24px;
+  color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
+  text-wrap: balance;
+}
+
+.hero-title mark {
+  background: none;
+  color: var(--color-lime);
+  font-style: italic;
+  position: relative;
+}
+
+.hero-title mark::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: 6px;
+  height: 13px;
+  background: rgba(203, 227, 107, 0.26);
+  border-radius: 4px;
+  z-index: -1;
+}
+
+.hero-lead {
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 580px;
+  margin: 0 auto 38px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 42px;
+}
+
+.btn-lg {
+  padding: 15px 32px;
+  font-size: 15px;
+}
+
+/* A frosted outline button that reads over any slide. */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.65);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #fff;
+  color: var(--color-forest);
+}
+
+.hero-trust {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.hero-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+
+.hero-trust-item svg {
+  color: var(--color-lime);
+}
+
+/* Slide indicators — pill bars that widen and go lime when active. */
+.hero-indicators {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 10px;
+}
+
+.hero-dot {
+  width: 30px;
+  height: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition:
+    width 0.35s ease,
+    background 0.35s ease;
+}
+
+.hero-dot.active {
+  width: 48px;
+  background: var(--color-lime);
+}
+
+/* Frosted-glass badge floating over the imagery. */
+.hero-badge-glass {
+  position: absolute;
+  right: clamp(16px, 4vw, 56px);
+  bottom: 56px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 300px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
+}
+
+.hero-badge-glass svg {
+  flex-shrink: 0;
+  color: var(--color-lime);
+}
+
+.hero-badge-glass strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 15px;
+}
+
+.hero-badge-glass span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+@media (max-width: 1024px) {
+  .hero {
+    min-height: 74vh;
+    padding: 84px 0 96px;
+  }
 }
 
 /* Fade each featured card in when the rotating pick remounts it. */
@@ -465,7 +666,11 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-slide {
-    transition: none;
+    transition: opacity 0.4s ease;
+    transform: none;
+  }
+  .hero-slide.active {
+    transform: none;
   }
   .featured-rotator-slot {
     animation: none;
@@ -2103,6 +2308,30 @@ dialog::backdrop {
   margin-bottom: 18px;
 }
 
+/* Brand sub-sections within a category (e.g. Spices & Nutrition). */
+.shop-section + .shop-section {
+  margin-top: 48px;
+}
+
+.shop-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 23px;
+  color: var(--color-forest);
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.shop-section-title::before {
+  content: "";
+  width: 26px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-lime-deep);
+}
+
 /* ============================================================
    BREADCRUMB (prototype lines 252-253)
    ============================================================ */
@@ -2326,7 +2555,47 @@ dialog::backdrop {
   }
 
   .hero {
-    padding: 48px 0 74px;
+    min-height: auto;
+    padding: 72px 0 86px;
+  }
+
+  /* On a phone the panel would hide most of the slide, so the copy drops its
+     panel and reads directly over a stronger full-screen scrim instead — the
+     photo stays visible and the centred text keeps its contrast. */
+  .hero-content {
+    max-width: 100%;
+    padding: 8px 4px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .hero-scrim {
+    background:
+      radial-gradient(
+        96% 56% at 50% 52%,
+        rgba(8, 20, 12, 0.56) 0%,
+        rgba(8, 20, 12, 0) 78%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(8, 20, 12, 0.42) 0%,
+        rgba(8, 20, 12, 0.5) 50%,
+        rgba(8, 20, 12, 0.72) 100%
+      );
+  }
+
+  .hero-lead {
+    margin-bottom: 30px;
+  }
+
+  .hero-badge-glass {
+    display: none;
+  }
+
+  .hero-indicators {
+    bottom: 22px;
   }
 
   .hero-inner {
