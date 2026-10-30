@@ -50,7 +50,7 @@ export const SITE = {
       "/images/slide2.jpeg",
       "/images/slide3.jpeg",
       "/images/hero-slide-4.jpeg",
-      "/images/slide5.jpeg",
+      "/images/hero-slide-5.jpeg",
       "/images/slide6.jpeg",
     ],
     // About-page Company Overview image (replaces the old ImageKit "workers").
