@@ -49,9 +49,9 @@ export const SITE = {
       "/images/slide1.jpeg",
       "/images/slide2.jpeg",
       "/images/slide3.jpeg",
-      // New filename so browsers and the image optimiser drop the cached
-      // previous slide-4 photo (2026-10-30).
       "/images/hero-slide-4.jpeg",
+      "/images/slide5.jpeg",
+      "/images/slide6.jpeg",
     ],
     // About-page Company Overview image (replaces the old ImageKit "workers").
     aboutOverview: "/images/slide3.jpeg",
