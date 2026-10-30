@@ -10,7 +10,7 @@ import { SITE } from "@/lib/constants";
 const SLIDE_MS = 5000;
 
 /**
- * The home hero: a full-bleed, cross-fading photographic slideshow of the five
+ * The home hero: a full-bleed, cross-fading photographic slideshow of the four
  * farm slides with a forest scrim, white editorial copy, clickable slide
  * indicators and a frosted "From Seed to Harvest" badge.
  *

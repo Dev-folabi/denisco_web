@@ -19,7 +19,7 @@ const SORT_OPTIONS = [
   { value: "name", label: "Name: A-Z" },
 ];
 
-// Within the Spices & Nutrition category the shop shows two titled sections,
+// Within the Spices category the shop shows two titled sections,
 // one per brand range. The brand is read from the product name's prefix, since
 // the product model carries no brand field.
 const SPICE_BRANDS = [
@@ -32,7 +32,7 @@ interface ProductSection {
   items: Product[];
 }
 
-/** Splits the Spices & Nutrition category into its two brand sections; every
+/** Splits the Spices category into its two brand sections; every
  *  other view is a single untitled section. */
 function buildSections(
   category: string,
@@ -54,7 +54,7 @@ function buildSections(
 
   const rest = products.filter((product) => !matched.has(product.id));
   if (rest.length) {
-    sections.push({ title: "More Spices & Nutrition", items: rest });
+    sections.push({ title: "More Spices", items: rest });
   }
 
   return sections.filter((section) => section.items.length > 0);
@@ -118,7 +118,7 @@ export function ShopContent({
     <>
       <PageHero
         title="Farm Products Shop"
-        description="Order quality poultry, livestock, piggery, snail and crop produce directly from our farm."
+        description="Order quality poultry, livestock, micro-livestock, crop produce and animal nutrition directly from our farm."
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Shop" },

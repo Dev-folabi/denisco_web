@@ -15,7 +15,7 @@ export const revalidate = 60;
 export const metadata: Metadata = pageMetadata({
   title: "Farm Products Shop",
   description:
-    "Order quality poultry, livestock, pig & micro-livestock, crops, snails and AROMACRAFT & ROYAL LUSH spices directly from the DENISCO farm, with nationwide delivery or pickup at the farm.",
+    "Order quality poultry, livestock, micro-livestock, crops, animal nutrition and AROMACRAFT & ROYAL LUSH spices directly from the DENISCO farm, with nationwide delivery or pickup at the farm.",
   path: "/shop",
 });
 

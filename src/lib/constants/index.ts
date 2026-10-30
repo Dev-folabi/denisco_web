@@ -25,7 +25,7 @@ export const SITE = {
       "Growing with Nature. From Seed to Harvest. Creating Value for Life.",
     address:
       "3 Martin Luther King Street, 5th Avenue, Gwarimpa, Abuja, Nigeria",
-    phone: "+234 808 627 3838",
+    phone: "+234 808 627 3838, +234 803 786 6623",
     whatsapp: "+234 803 786 6623",
     email: "info@deniscoglobalagroltd.com",
     hours: "Mon to Sat: 8:00 AM to 6:00 PM",
@@ -49,8 +49,9 @@ export const SITE = {
       "/images/slide1.jpeg",
       "/images/slide2.jpeg",
       "/images/slide3.jpeg",
-      "/images/slide4.jpeg",
-      "/images/slide5.jpeg",
+      // New filename so browsers and the image optimiser drop the cached
+      // previous slide-4 photo (2026-10-30).
+      "/images/hero-slide-4.jpeg",
     ],
     // About-page Company Overview image (replaces the old ImageKit "workers").
     aboutOverview: "/images/slide3.jpeg",
@@ -150,10 +151,10 @@ export const SITE = {
   categories: [
     { slug: "poultry", label: "Poultry" },
     { slug: "livestock", label: "Livestock" },
-    { slug: "piggery", label: "Pig & Micro-Livestock" },
+    { slug: "micro-livestock", label: "Micro-Livestock" },
     { slug: "crops", label: "Crop Farming" },
-    { slug: "snail", label: "Snail Farming" },
-    { slug: "spices", label: "Spices & Nutrition" },
+    { slug: "animal-nutrition", label: "Animal Nutrition" },
+    { slug: "spices", label: "Spices" },
   ],
   services: [
     {

@@ -413,7 +413,7 @@ textarea {
   isolation: isolate;
 }
 
-/* The five slides, full-bleed, cross-fading with a slow Ken Burns zoom. */
+/* The four slides, full-bleed, cross-fading with a slow Ken Burns zoom. */
 .hero-bg {
   position: absolute;
   inset: 0;
@@ -445,10 +445,10 @@ textarea {
   z-index: -1;
   background: linear-gradient(
     180deg,
-    rgba(8, 20, 12, 0.52) 0%,
-    rgba(8, 20, 12, 0.3) 30%,
-    rgba(8, 20, 12, 0.34) 68%,
-    rgba(8, 20, 12, 0.62) 100%
+    rgba(8, 20, 12, 0.4) 0%,
+    rgba(8, 20, 12, 0.18) 30%,
+    rgba(8, 20, 12, 0.22) 68%,
+    rgba(8, 20, 12, 0.5) 100%
   );
 }
 
@@ -463,11 +463,11 @@ textarea {
   /* The copy sits on its own frosted-dark panel so every colour — white, the
      lime accent, the muted lead — keeps a consistent dark surface behind it,
      whatever the slide shows. The photo still reads around and through it. */
-  background: rgba(10, 26, 16, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 26, 16, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 26px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(2px);
 }
 
 .hero-eyebrow {
